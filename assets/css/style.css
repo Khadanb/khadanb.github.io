@@ -1,6 +1,6 @@
 :root {
-    --primary-color: #6366f1;
-    --secondary-color: #a855f7;
+    --primary-color: #3b82f6;
+    --secondary-color: #60a5fa;
     --bg-color: #0f172a;
     --text-color: #f8fafc;
     --glass-bg: rgba(255, 255, 255, 0.03);
@@ -153,12 +153,12 @@ p {
     border-radius: 9999px;
     font-weight: 600;
     transition: all 0.3s ease;
-    box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
 }
 
 .cta-button:hover {
     transform: scale(1.05);
-    box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.4);
 }
 
 /* Footer */
@@ -219,7 +219,7 @@ footer {
 .tag {
     display: inline-block;
     padding: 0.25rem 0.75rem;
-    background: rgba(99, 102, 241, 0.1);
+    background: rgba(59, 130, 246, 0.1);
     color: var(--primary-color);
     border-radius: 9999px;
     font-size: 0.75rem;
