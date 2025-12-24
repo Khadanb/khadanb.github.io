@@ -17,3 +17,13 @@ docker compose up --build
 ```
 
 The application will be available at `http://localhost:8000`.
+
+### Development with Watch Mode
+
+To enable automatic syncing of file changes and automatic image rebuilding (when dependencies change), use the `watch` command:
+
+```bash
+docker compose watch
+```
+
+This is the recommended workflow for active development.
