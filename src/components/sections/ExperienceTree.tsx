@@ -69,7 +69,7 @@ export function ExperienceTree() {
   return (
     <section
       id="experience"
-      className="py-16 sm:py-32 bg-bg relative overflow-hidden"
+      className="py-16 sm:py-32 relative overflow-hidden"
     >
       <div className="max-w-7xl mx-auto relative px-4 sm:px-8">
         <div className="mb-12 sm:mb-24 flex justify-center">
