@@ -45,3 +45,10 @@ html {
     }
   }
 }
+
+/* Reusable component classes */
+@layer components {
+  .glass-card {
+    @apply bg-glass-bg backdrop-blur-xl border border-glass-border rounded-3xl;
+  }
+}

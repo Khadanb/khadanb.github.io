@@ -12,6 +12,15 @@ export const experiences: Experience[] = [
     ],
   },
   {
+    company: 'Georgia Institute of Technology',
+    title: 'M.S. Computer Science',
+    date: 'Sep 2025 – Present',
+    highlights: [
+      'GPA: 4.0',
+      'Computational Perception and Robotics',
+    ],
+  },
+  {
     company: 'Naval Air Warfare Center Aircraft Divison - Lakehurst',
     title: 'R&D Portfolio Manager',
     date: 'Nov 2024 – Aug 2025',

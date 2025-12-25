@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
+import { NAV_ITEMS, type SectionId } from '../config/navigation';
 
-const SECTION_IDS = ['home', 'experience', 'projects', 'publications', 'resume', 'contact'] as const;
-export type SectionId = (typeof SECTION_IDS)[number];
+export type { SectionId };
 
 export function useScrollSpy(): SectionId {
   const [activeSection, setActiveSection] = useState<SectionId>('home');
@@ -10,7 +10,7 @@ export function useScrollSpy(): SectionId {
     const observers: IntersectionObserver[] = [];
     const sectionVisibility = new Map<SectionId, number>();
 
-    SECTION_IDS.forEach((id) => {
+    NAV_ITEMS.forEach(({ id }) => {
       const element = document.getElementById(id);
       if (!element) return;
 
@@ -51,7 +51,7 @@ export function useScrollSpy(): SectionId {
 
     // Handle initial hash on page load
     const initialHash = window.location.hash.slice(1) as SectionId;
-    if (initialHash && SECTION_IDS.includes(initialHash)) {
+    if (initialHash && NAV_ITEMS.some((item) => item.id === initialHash)) {
       const element = document.getElementById(initialHash);
       if (element) {
         setTimeout(() => {

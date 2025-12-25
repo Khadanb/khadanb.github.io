@@ -1,15 +1,7 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { useScrollSpy, type SectionId } from '../../hooks';
-
-const navLinks: { href: SectionId; label: string }[] = [
-  { href: 'home', label: 'Home' },
-  { href: 'experience', label: 'Experience' },
-  { href: 'projects', label: 'Projects' },
-  { href: 'publications', label: 'Publications' },
-  { href: 'resume', label: 'Resume' },
-  { href: 'contact', label: 'Contact' },
-];
+import { useScrollSpy } from '../../hooks';
+import { NAV_ITEMS } from '../../config/navigation';
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,12 +19,12 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <ul className="hidden md:flex gap-8 list-none">
-          {navLinks.map((link) => (
-            <li key={link.href}>
+          {NAV_ITEMS.map((link) => (
+            <li key={link.id}>
               <a
-                href={`#${link.href}`}
+                href={`#${link.id}`}
                 className={`font-medium transition-colors duration-300 hover:text-white ${
-                  activeSection === link.href ? 'text-white' : 'text-slate-400'
+                  activeSection === link.id ? 'text-white' : 'text-slate-400'
                 }`}
               >
                 {link.label}
@@ -55,12 +47,12 @@ export function Navbar() {
       {isMenuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-bg/95 backdrop-blur-md border-b border-glass-border">
           <ul className="flex flex-col py-4">
-            {navLinks.map((link) => (
-              <li key={link.href}>
+            {NAV_ITEMS.map((link) => (
+              <li key={link.id}>
                 <a
-                  href={`#${link.href}`}
+                  href={`#${link.id}`}
                   className={`block px-4 py-3 font-medium transition-colors duration-300 hover:text-white hover:bg-white/5 ${
-                    activeSection === link.href ? 'text-white' : 'text-slate-400'
+                    activeSection === link.id ? 'text-white' : 'text-slate-400'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
