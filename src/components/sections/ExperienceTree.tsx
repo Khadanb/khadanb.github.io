@@ -2,6 +2,9 @@ import { useEffect, useRef, createRef } from 'react';
 import { TreeLeaf } from '../ui/TreeLeaf';
 import { experiences } from '../../data/experiences';
 
+// Constants
+const OVERSHOOT_DIVISOR = 50;
+
 export function ExperienceTree() {
   const stemRef = useRef<HTMLDivElement>(null);
   const stemContainerRef = useRef<HTMLDivElement>(null);
@@ -17,7 +20,6 @@ export function ExperienceTree() {
       const stemHeight = stemContainerRect.height;
 
       // Calculate progress based on stem container position
-      // Lighting starts when stem top enters viewport
       let progress = (windowHeight - stemTop) / (stemHeight + windowHeight);
       progress = Math.max(0, Math.min(1, progress));
 
@@ -35,23 +37,22 @@ export function ExperienceTree() {
         const branchY = branchRect.top + branchRect.height / 2;
 
         // Find the lit portion div inside the branch
-        const litPortion = branch.querySelector('div');
+        const litPortion = branch.querySelector<HTMLDivElement>('div');
         // Also find mobile branch (sibling)
-        const mobileBranch = branch.parentElement?.querySelector('.sm\\:hidden > div');
+        const mobileBranch = branch.parentElement?.querySelector<HTMLDivElement>('.sm\\:hidden > div');
 
         if (litPortion) {
           if (litStemBottom >= branchY) {
-            // Calculate how far past the branch the stem has gone (for smooth fill)
-            const overshoot = Math.min((litStemBottom - branchY) / 50, 1);
+            const overshoot = Math.min((litStemBottom - branchY) / OVERSHOOT_DIVISOR, 1);
             litPortion.style.transform = `scaleX(${overshoot})`;
           } else {
             litPortion.style.transform = 'scaleX(0)';
           }
         }
 
-        if (mobileBranch instanceof HTMLElement) {
+        if (mobileBranch) {
           if (litStemBottom >= branchY) {
-            const overshoot = Math.min((litStemBottom - branchY) / 50, 1);
+            const overshoot = Math.min((litStemBottom - branchY) / OVERSHOOT_DIVISOR, 1);
             mobileBranch.style.transform = `scaleX(${overshoot})`;
           } else {
             mobileBranch.style.transform = 'scaleX(0)';
@@ -61,7 +62,7 @@ export function ExperienceTree() {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
+    handleScroll(); // Initial call
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);

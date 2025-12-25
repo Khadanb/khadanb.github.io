@@ -74,8 +74,9 @@ export const TreeLeaf = forwardRef<HTMLDivElement, TreeLeafProps>(
         >
           {/* Lit portion of branch */}
           <div
+            data-branch-lit
             className="absolute inset-0 bg-primary shadow-glow origin-left"
-            style={{ transform: 'scaleX(0)' }}
+            style={{ transform: 'scaleX(0)', willChange: 'transform' }}
           />
         </div>
 
@@ -89,7 +90,7 @@ export const TreeLeaf = forwardRef<HTMLDivElement, TreeLeafProps>(
           {/* Lit portion of mobile branch */}
           <div
             className="absolute inset-0 bg-primary shadow-glow origin-left"
-            style={{ transform: 'scaleX(0)' }}
+            style={{ transform: 'scaleX(0)', willChange: 'transform' }}
           />
         </div>
       </div>

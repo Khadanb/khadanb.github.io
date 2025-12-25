@@ -48,7 +48,21 @@ html {
 
 /* Reusable component classes */
 @layer components {
+  /* Glass morphism cards */
   .glass-card {
-    @apply bg-glass-bg backdrop-blur-xl border border-glass-border rounded-3xl;
+    @apply bg-glass-bg backdrop-blur-xl border border-glass-border rounded-3xl shadow-2xl;
+  }
+
+  .glass-card-sm {
+    @apply bg-glass-bg backdrop-blur-2xl border border-glass-border rounded-2xl shadow-2xl;
+  }
+
+  /* Glass navigation */
+  .glass-nav {
+    @apply bg-bg/80 backdrop-blur-md border-b border-glass-border;
+  }
+
+  .glass-nav-mobile {
+    @apply bg-bg/95 backdrop-blur-md border-b border-glass-border;
   }
 }

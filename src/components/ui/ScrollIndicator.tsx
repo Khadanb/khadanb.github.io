@@ -1,5 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState, useCallback } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useThrottledScroll } from '../../hooks/useThrottledScroll';
+
+// Constants
+const SCROLL_THRESHOLD = 100;
 
 interface ScrollIndicatorProps {
   targetId: string;
@@ -8,14 +12,11 @@ interface ScrollIndicatorProps {
 export function ScrollIndicator({ targetId }: ScrollIndicatorProps) {
   const [isVisible, setIsVisible] = useState(true);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsVisible(window.scrollY <= 100);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+  const handleScroll = useCallback((scrollY: number) => {
+    setIsVisible(scrollY <= SCROLL_THRESHOLD);
   }, []);
+
+  useThrottledScroll(handleScroll);
 
   return (
     <div

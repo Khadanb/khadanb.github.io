@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { STARFIELD_CONFIG } from '../../config/starfield';
 
 interface Star {
   x: number;
@@ -7,7 +8,7 @@ interface Star {
   opacity: number;
   twinkleSpeed: number;
   twinklePhase: number;
-  layer: number; // 0 = far (slow), 1 = mid, 2 = near (fast)
+  layer: number;
 }
 
 interface StarFieldProps {
@@ -20,18 +21,31 @@ export function StarField({ starCount = 200, className = '' }: StarFieldProps) {
   const starsRef = useRef<Star[]>([]);
   const animationRef = useRef<number>(0);
   const scrollYRef = useRef(0);
+  const gradientRef = useRef<CanvasGradient | null>(null);
+  const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) {
+      console.warn('StarField: Canvas 2D context not available');
+      return;
+    }
 
-    // Set canvas size
+    const { CANVAS_HEIGHT_MULTIPLIER, LAYER_COUNT, RADIUS, OPACITY, TWINKLE, GRADIENT, PARALLAX_SPEEDS, GLOW } = STARFIELD_CONFIG;
+
+    // Set canvas size and cache gradient
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight * 2; // Extra height for scrolling
+      canvas.height = window.innerHeight * CANVAS_HEIGHT_MULTIPLIER;
+
+      // Cache the gradient (must be recreated on resize)
+      gradientRef.current = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      GRADIENT.COLORS.forEach(({ stop, color }) => {
+        gradientRef.current?.addColorStop(stop, color);
+      });
     };
     resizeCanvas();
 
@@ -39,15 +53,14 @@ export function StarField({ starCount = 200, className = '' }: StarFieldProps) {
     const initStars = () => {
       starsRef.current = [];
       for (let i = 0; i < starCount; i++) {
-        const layer = Math.floor(Math.random() * 3);
+        const layer = Math.floor(Math.random() * LAYER_COUNT);
+        const radiusConfig = layer === 0 ? RADIUS.FAR : layer === 1 ? RADIUS.MID : RADIUS.NEAR;
         starsRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          radius: layer === 0 ? 0.5 + Math.random() * 0.5 :
-                  layer === 1 ? 0.8 + Math.random() * 0.7 :
-                  1 + Math.random() * 1.5,
-          opacity: 0.3 + Math.random() * 0.7,
-          twinkleSpeed: 0.5 + Math.random() * 2,
+          radius: radiusConfig.MIN + Math.random() * radiusConfig.RANGE,
+          opacity: OPACITY.MIN + Math.random() * OPACITY.RANGE,
+          twinkleSpeed: TWINKLE.SPEED.MIN + Math.random() * TWINKLE.SPEED.RANGE,
           twinklePhase: Math.random() * Math.PI * 2,
           layer,
         });
@@ -55,7 +68,7 @@ export function StarField({ starCount = 200, className = '' }: StarFieldProps) {
     };
     initStars();
 
-    // Handle scroll
+    // Handle scroll (RAF throttled via animation loop)
     const handleScroll = () => {
       scrollYRef.current = window.scrollY;
     };
@@ -69,24 +82,21 @@ export function StarField({ starCount = 200, className = '' }: StarFieldProps) {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw gradient background
-      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      gradient.addColorStop(0, '#000000');
-      gradient.addColorStop(0.3, '#05071a');
-      gradient.addColorStop(0.6, '#0c1445');
-      gradient.addColorStop(1, '#1a237e');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Draw cached gradient background
+      if (gradientRef.current) {
+        ctx.fillStyle = gradientRef.current;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
 
       // Draw and update stars
       starsRef.current.forEach((star) => {
         // Update twinkle
         star.twinklePhase += star.twinkleSpeed * deltaTime;
         const twinkle = 0.5 + 0.5 * Math.sin(star.twinklePhase);
-        const currentOpacity = star.opacity * (0.6 + 0.4 * twinkle);
+        const currentOpacity = star.opacity * (TWINKLE.BASE + TWINKLE.AMPLITUDE * twinkle);
 
         // Parallax offset based on layer
-        const parallaxSpeed = star.layer === 0 ? 0.1 : star.layer === 1 ? 0.2 : 0.3;
+        const parallaxSpeed = PARALLAX_SPEEDS[star.layer];
         const yOffset = scrollYRef.current * parallaxSpeed;
         const drawY = (star.y - yOffset) % canvas.height;
         const finalY = drawY < 0 ? drawY + canvas.height : drawY;
@@ -98,14 +108,15 @@ export function StarField({ starCount = 200, className = '' }: StarFieldProps) {
         ctx.fill();
 
         // Add glow for larger stars
-        if (star.radius > 1.2) {
+        if (star.radius > GLOW.THRESHOLD) {
           ctx.beginPath();
-          ctx.arc(star.x, finalY, star.radius * 2, 0, Math.PI * 2);
+          const glowRadius = star.radius * GLOW.SIZE_MULTIPLIER;
+          ctx.arc(star.x, finalY, glowRadius, 0, Math.PI * 2);
           const glowGradient = ctx.createRadialGradient(
             star.x, finalY, 0,
-            star.x, finalY, star.radius * 2
+            star.x, finalY, glowRadius
           );
-          glowGradient.addColorStop(0, `rgba(200, 220, 255, ${currentOpacity * 0.3})`);
+          glowGradient.addColorStop(0, `rgba(200, 220, 255, ${currentOpacity * GLOW.OPACITY_MULTIPLIER})`);
           glowGradient.addColorStop(1, 'rgba(200, 220, 255, 0)');
           ctx.fillStyle = glowGradient;
           ctx.fill();
@@ -117,15 +128,21 @@ export function StarField({ starCount = 200, className = '' }: StarFieldProps) {
 
     animationRef.current = requestAnimationFrame(animate);
 
-    // Handle resize
-    window.addEventListener('resize', () => {
-      resizeCanvas();
-      initStars();
-    });
+    // Handle resize with debouncing
+    const handleResize = () => {
+      if (resizeTimeoutRef.current) clearTimeout(resizeTimeoutRef.current);
+      resizeTimeoutRef.current = setTimeout(() => {
+        resizeCanvas();
+        initStars();
+      }, 100);
+    };
+    window.addEventListener('resize', handleResize);
 
     return () => {
       cancelAnimationFrame(animationRef.current);
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+      if (resizeTimeoutRef.current) clearTimeout(resizeTimeoutRef.current);
     };
   }, [starCount]);
 

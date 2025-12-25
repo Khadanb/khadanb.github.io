@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useScrollSpy } from '../../hooks';
 import { NAV_ITEMS } from '../../config/navigation';
+import { NavLink } from '../ui/NavLink';
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const activeSection = useScrollSpy();
 
   return (
-    <nav className="fixed top-0 w-full z-50 py-4 sm:py-6 bg-bg/80 backdrop-blur-md border-b border-glass-border">
+    <nav className="fixed top-0 w-full z-50 py-4 sm:py-6 glass-nav">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 flex justify-between items-center">
         <a
           href="#home"
@@ -20,16 +21,12 @@ export function Navbar() {
         {/* Desktop Navigation */}
         <ul className="hidden md:flex gap-8 list-none">
           {NAV_ITEMS.map((link) => (
-            <li key={link.id}>
-              <a
-                href={`#${link.id}`}
-                className={`font-medium transition-colors duration-300 hover:text-white ${
-                  activeSection === link.id ? 'text-white' : 'text-slate-400'
-                }`}
-              >
-                {link.label}
-              </a>
-            </li>
+            <NavLink
+              key={link.id}
+              link={link}
+              activeSection={activeSection}
+              variant="desktop"
+            />
           ))}
         </ul>
 
@@ -45,20 +42,16 @@ export function Navbar() {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 w-full bg-bg/95 backdrop-blur-md border-b border-glass-border">
+        <div className="md:hidden absolute top-full left-0 w-full glass-nav-mobile">
           <ul className="flex flex-col py-4">
             {NAV_ITEMS.map((link) => (
-              <li key={link.id}>
-                <a
-                  href={`#${link.id}`}
-                  className={`block px-4 py-3 font-medium transition-colors duration-300 hover:text-white hover:bg-white/5 ${
-                    activeSection === link.id ? 'text-white' : 'text-slate-400'
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.label}
-                </a>
-              </li>
+              <NavLink
+                key={link.id}
+                link={link}
+                activeSection={activeSection}
+                variant="mobile"
+                onClick={() => setIsMenuOpen(false)}
+              />
             ))}
           </ul>
         </div>
