@@ -12,7 +12,7 @@ export const experiences: Experience[] = [
     ],
   },
   {
-    company: 'NAWCAD',
+    company: 'Naval Air Warfare Center Aircraft Divison - Lakehurst',
     title: 'R&D Portfolio Manager',
     date: 'Nov 2024 – Aug 2025',
     highlights: [
@@ -21,7 +21,7 @@ export const experiences: Experience[] = [
     ],
   },
   {
-    company: 'NAWCAD',
+    company: 'Naval Air Warfare Center Aircraft Divison - Lakehurst',
     title: 'R&D Computer Engineer',
     date: 'Jul 2024 – Aug 2025',
     highlights: [
@@ -37,7 +37,7 @@ export const experiences: Experience[] = [
     highlights: ['C.P. Davis Named Scholar', "Dean's List - 2022"],
   },
   {
-    company: 'NAWCAD',
+    company: 'Naval Air Warfare Center Aircraft Divison - Lakehurst',
     title: 'Engineering Intern',
     date: 'Jun 2023 – Aug 2023',
     highlights: [
@@ -46,7 +46,7 @@ export const experiences: Experience[] = [
     ],
   },
   {
-    company: 'NAWCAD',
+    company: 'Naval Air Warfare Center Aircraft Divison - Lakehurst',
     title: 'Engineering Intern',
     date: 'Jun 2022 – Aug 2022',
     highlights: ['Automated data labeling tool', '80% manual effort reduction'],

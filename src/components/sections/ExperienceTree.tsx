@@ -3,28 +3,27 @@ import { TreeLeaf } from '../ui/TreeLeaf';
 import { experiences } from '../../data/experiences';
 
 export function ExperienceTree() {
-  const sectionRef = useRef<HTMLElement>(null);
   const stemRef = useRef<HTMLDivElement>(null);
   const stemContainerRef = useRef<HTMLDivElement>(null);
   const branchRefs = useRef(experiences.map(() => createRef<HTMLDivElement>()));
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!sectionRef.current || !stemRef.current || !stemContainerRef.current) return;
+      if (!stemRef.current || !stemContainerRef.current) return;
 
-      const rect = sectionRef.current.getBoundingClientRect();
+      const stemContainerRect = stemContainerRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
+      const stemTop = stemContainerRect.top;
+      const stemHeight = stemContainerRect.height;
 
-      let progress = (windowHeight - rect.top) / (rect.height + windowHeight / 2);
+      // Calculate progress based on stem container position
+      // Lighting starts when stem top enters viewport
+      let progress = (windowHeight - stemTop) / (stemHeight + windowHeight);
       progress = Math.max(0, Math.min(1, progress));
 
       // Update stem height
       stemRef.current.style.height = `${progress * 100}%`;
 
-      // Get stem container position for branch calculations
-      const stemContainerRect = stemContainerRef.current.getBoundingClientRect();
-      const stemTop = stemContainerRect.top;
-      const stemHeight = stemContainerRect.height;
       const litStemBottom = stemTop + stemHeight * progress;
 
       // Update each branch based on whether the stem has reached it
@@ -70,11 +69,15 @@ export function ExperienceTree() {
   return (
     <section
       id="experience"
-      ref={sectionRef}
       className="py-16 sm:py-32 bg-bg relative overflow-hidden"
     >
       <div className="max-w-7xl mx-auto relative px-4 sm:px-8">
-        <h2 className="text-3xl sm:text-5xl font-bold text-center mb-12 sm:mb-24">Experience</h2>
+        <div className="mb-12 sm:mb-24 flex justify-center">
+          <div className="inline-block">
+            <h2 className="text-3xl sm:text-5xl font-bold text-center mb-2">Experience</h2>
+            <div className="w-full h-0.5 bg-primary/50" />
+          </div>
+        </div>
 
         {/* Stem - left on mobile, center on desktop */}
         <div
