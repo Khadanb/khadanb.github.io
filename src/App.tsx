@@ -1,25 +1,7 @@
-import { Routes, Route } from 'react-router-dom';
-import { Layout } from './components/layout';
-import {
-  HomePage,
-  ProjectsPage,
-  PublicationsPage,
-  ResumePage,
-  ContactPage,
-} from './pages';
+import { SinglePageLayout } from './components/layout';
 
 function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<HomePage />} />
-        <Route path="projects" element={<ProjectsPage />} />
-        <Route path="publications" element={<PublicationsPage />} />
-        <Route path="resume" element={<ResumePage />} />
-        <Route path="contact" element={<ContactPage />} />
-      </Route>
-    </Routes>
-  );
+  return <SinglePageLayout />;
 }
 
 export default App;

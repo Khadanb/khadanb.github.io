@@ -1,8 +1,15 @@
-import { Outlet } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
+import {
+  Hero,
+  ExperienceTree,
+  ProjectsSection,
+  PublicationsSection,
+  ResumeSection,
+  ContactSection,
+} from '../sections';
 
-export function Layout() {
+export function SinglePageLayout() {
   return (
     <div className="min-h-screen bg-bg text-text font-sans flex flex-col overflow-x-hidden">
       {/* Background Effects */}
@@ -10,7 +17,16 @@ export function Layout() {
       <div className="fixed w-[500px] h-[500px] bg-gradient-to-br from-primary to-secondary blur-[80px] rounded-full opacity-15 animate-blob -z-10" />
 
       <Navbar />
-      <Outlet />
+
+      <main className="flex-1">
+        <Hero />
+        <ExperienceTree />
+        <ProjectsSection />
+        <PublicationsSection />
+        <ResumeSection />
+        <ContactSection />
+      </main>
+
       <Footer />
     </div>
   );

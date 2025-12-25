@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+
 /* Custom theme using Tailwind v4 CSS variables */
 @theme {
   --color-primary: #3b82f6;

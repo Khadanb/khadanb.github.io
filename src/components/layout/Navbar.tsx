@@ -1,41 +1,42 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useScrollSpy, type SectionId } from '../../hooks';
 
-const navLinks = [
-  { href: '/', label: 'Home' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/publications', label: 'Publications' },
-  { href: '/resume', label: 'Resume' },
-  { href: '/contact', label: 'Contact' },
+const navLinks: { href: SectionId; label: string }[] = [
+  { href: 'home', label: 'Home' },
+  { href: 'experience', label: 'Experience' },
+  { href: 'projects', label: 'Projects' },
+  { href: 'publications', label: 'Publications' },
+  { href: 'resume', label: 'Resume' },
+  { href: 'contact', label: 'Contact' },
 ];
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const location = useLocation();
+  const activeSection = useScrollSpy();
 
   return (
     <nav className="fixed top-0 w-full z-50 py-4 sm:py-6 bg-bg/80 backdrop-blur-md border-b border-glass-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 flex justify-between items-center">
-        <Link
-          to="/"
+        <a
+          href="#home"
           className="font-extrabold text-xl sm:text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
         >
           Brandon Khadan
-        </Link>
+        </a>
 
         {/* Desktop Navigation */}
         <ul className="hidden md:flex gap-8 list-none">
           {navLinks.map((link) => (
             <li key={link.href}>
-              <Link
-                to={link.href}
+              <a
+                href={`#${link.href}`}
                 className={`font-medium transition-colors duration-300 hover:text-white ${
-                  location.pathname === link.href ? 'text-white' : 'text-slate-400'
+                  activeSection === link.href ? 'text-white' : 'text-slate-400'
                 }`}
               >
                 {link.label}
-              </Link>
+              </a>
             </li>
           ))}
         </ul>
@@ -56,15 +57,15 @@ export function Navbar() {
           <ul className="flex flex-col py-4">
             {navLinks.map((link) => (
               <li key={link.href}>
-                <Link
-                  to={link.href}
+                <a
+                  href={`#${link.href}`}
                   className={`block px-4 py-3 font-medium transition-colors duration-300 hover:text-white hover:bg-white/5 ${
-                    location.pathname === link.href ? 'text-white' : 'text-slate-400'
+                    activeSection === link.href ? 'text-white' : 'text-slate-400'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.label}
-                </Link>
+                </a>
               </li>
             ))}
           </ul>

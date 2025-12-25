@@ -1,14 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, createRef } from 'react';
 import { TreeLeaf } from '../ui/TreeLeaf';
 import { experiences } from '../../data/experiences';
 
 export function ExperienceTree() {
-  const [stemProgress, setStemProgress] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
+  const stemRef = useRef<HTMLDivElement>(null);
+  const stemContainerRef = useRef<HTMLDivElement>(null);
+  const branchRefs = useRef(experiences.map(() => createRef<HTMLDivElement>()));
 
   useEffect(() => {
     const handleScroll = () => {
-      if (!sectionRef.current) return;
+      if (!sectionRef.current || !stemRef.current || !stemContainerRef.current) return;
 
       const rect = sectionRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
@@ -16,10 +18,50 @@ export function ExperienceTree() {
       let progress = (windowHeight - rect.top) / (rect.height + windowHeight / 2);
       progress = Math.max(0, Math.min(1, progress));
 
-      setStemProgress(progress * 100);
+      // Update stem height
+      stemRef.current.style.height = `${progress * 100}%`;
+
+      // Get stem container position for branch calculations
+      const stemContainerRect = stemContainerRef.current.getBoundingClientRect();
+      const stemTop = stemContainerRect.top;
+      const stemHeight = stemContainerRect.height;
+      const litStemBottom = stemTop + stemHeight * progress;
+
+      // Update each branch based on whether the stem has reached it
+      branchRefs.current.forEach((branchRef) => {
+        const branch = branchRef.current;
+        if (!branch) return;
+
+        const branchRect = branch.getBoundingClientRect();
+        const branchY = branchRect.top + branchRect.height / 2;
+
+        // Find the lit portion div inside the branch
+        const litPortion = branch.querySelector('div');
+        // Also find mobile branch (sibling)
+        const mobileBranch = branch.parentElement?.querySelector('.sm\\:hidden > div');
+
+        if (litPortion) {
+          if (litStemBottom >= branchY) {
+            // Calculate how far past the branch the stem has gone (for smooth fill)
+            const overshoot = Math.min((litStemBottom - branchY) / 50, 1);
+            litPortion.style.transform = `scaleX(${overshoot})`;
+          } else {
+            litPortion.style.transform = 'scaleX(0)';
+          }
+        }
+
+        if (mobileBranch instanceof HTMLElement) {
+          if (litStemBottom >= branchY) {
+            const overshoot = Math.min((litStemBottom - branchY) / 50, 1);
+            mobileBranch.style.transform = `scaleX(${overshoot})`;
+          } else {
+            mobileBranch.style.transform = 'scaleX(0)';
+          }
+        }
+      });
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
 
     return () => window.removeEventListener('scroll', handleScroll);
@@ -35,16 +77,25 @@ export function ExperienceTree() {
         <h2 className="text-3xl sm:text-5xl font-bold text-center mb-12 sm:mb-24">Experience</h2>
 
         {/* Stem - left on mobile, center on desktop */}
-        <div className="absolute left-6 sm:left-1/2 top-32 sm:top-48 sm:-translate-x-1/2 w-1 h-[calc(100%-8rem)] sm:h-[calc(100%-12rem)] bg-gradient-to-b from-primary/50 via-secondary/50 to-primary/10 rounded-sm">
+        <div
+          ref={stemContainerRef}
+          className="absolute left-6 sm:left-1/2 top-32 sm:top-48 sm:-translate-x-1/2 w-1 h-[calc(100%-8rem)] sm:h-[calc(100%-12rem)] bg-gradient-to-b from-primary/50 via-secondary/50 to-primary/10 rounded-sm"
+        >
           <div
-            className="absolute left-0 top-0 w-full bg-gradient-to-b from-primary to-secondary shadow-glow rounded-sm transition-all duration-600"
-            style={{ height: `${stemProgress}%` }}
+            ref={stemRef}
+            className="absolute left-0 top-0 w-full bg-gradient-to-b from-primary to-secondary shadow-glow rounded-sm"
+            style={{ height: '0%' }}
           />
         </div>
 
         {/* Leaves */}
         {experiences.map((exp, index) => (
-          <TreeLeaf key={index} experience={exp} index={index} />
+          <TreeLeaf
+            key={index}
+            ref={branchRefs.current[index]}
+            experience={exp}
+            index={index}
+          />
         ))}
       </div>
     </section>
