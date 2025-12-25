@@ -1,157 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Brandon Khadan | Personal Website</title>
-    <meta name="description" content="Personal website and portfolio of Khadanb.">
+    <meta name="description" content="Personal website and portfolio of Brandon Khadan." />
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-
-<body>
-    <div class="bg-gradient"></div>
-    <div class="blob"></div>
-
-    <nav>
-        <div class="container">
-            <a href="/" class="logo">Brandon Khadan</a>
-            <ul class="nav-links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/projects/">Projects</a></li>
-                <li><a href="/publications/">Publications</a></li>
-                <li><a href="/resume/">Resume</a></li>
-                <li><a href="/contact/">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <main class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1>Welcome</h1>
-                <p>Building something amazing on GitHub Pages.</p>
-                <a href="/projects/" class="cta-button">Explore Projects</a>
-            </div>
-        </div>
-        <div class="scroll-indicator">
-            <a href="#experience" class="scroll-arrow">
-                <span></span>
-                <span></span>
-            </a>
-        </div>
-    </main>
-
-    <section id="experience" class="tree-section">
-        <div class="tree-container">
-            <h2 class="section-title" style="text-align: center; margin-bottom: 6rem; font-size: 3rem;">Experience
-            </h2>
-
-            <div class="tree-stem">
-                <div class="tree-stem-progress"></div>
-            </div>
-
-            <!-- CEB MetaSystems -->
-            <div class="tree-leaf">
-                <div class="tree-branch"></div>
-                <div class="leaf-content">
-                    <span class="company">CEB MetaSystems Inc.</span>
-                    <h3>Software Engineer - Computer Vision</h3>
-                    <span class="date">Aug 2025 – Present</span>
-                    <ul>
-                        <li>AI/ML computer vision for space systems</li>
-                        <li>Synthetic data generation pipelines</li>
-                        <li>Forward Deployed Engineering</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Portfolio Manager -->
-            <div class="tree-leaf">
-                <div class="tree-branch"></div>
-                <div class="leaf-content">
-                    <span class="company">NAWCAD</span>
-                    <h3>R&D Portfolio Manager</h3>
-                    <span class="date">Nov 2024 – Aug 2025</span>
-                    <ul>
-                        <li>Funding & technical roadmap alignment</li>
-                        <li>Modernizing mission-critical legacy systems</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Computer Engineer -->
-            <div class="tree-leaf">
-                <div class="tree-branch"></div>
-                <div class="leaf-content">
-                    <span class="company">NAWCAD</span>
-                    <h3>R&D Computer Engineer</h3>
-                    <span class="date">Jul 2024 – Aug 2025</span>
-                    <ul>
-                        <li>Containerized LLM agent (Python/Flask)</li>
-                        <li>Custom embedded SoCs (SystemVerilog/C++)</li>
-                        <li>Scalable simulation (C#/Unity3D)</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Education: Columbia -->
-            <div class="tree-leaf">
-                <div class="tree-branch"></div>
-                <div class="leaf-content">
-                    <span class="company">Columbia University</span>
-                    <h3>B.S. Computer Engineering</h3>
-                    <span class="date">Sep 2020 - May 2024</span>
-                    <ul>
-                        <li>C.P. Davis Named Scholar</li>
-                        <li>Dean's List - 2022</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Intern 2023 -->
-            <div class="tree-leaf">
-                <div class="tree-branch"></div>
-                <div class="leaf-content">
-                    <span class="company">NAWCAD</span>
-                    <h3>Engineering Intern</h3>
-                    <span class="date">Jun 2023 – Aug 2023</span>
-                    <ul>
-                        <li>CV health monitoring algorithms</li>
-                        <li>Multithreaded video processing</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Intern 2022 -->
-            <div class="tree-leaf">
-                <div class="tree-branch"></div>
-                <div class="leaf-content">
-                    <span class="company">NAWCAD</span>
-                    <h3>Engineering Intern</h3>
-                    <span class="date">Jun 2022 – Aug 2022</span>
-                    <ul>
-                        <li>Automated data labeling tool</li>
-                        <li>80% manual effort reduction</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <footer>
-        <p>&copy; 2025 Brandon Khadan.</p>
-    </footer>
-
-    <!-- Scripts -->
-    <script src="assets/js/tree.js"></script>
-</body>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

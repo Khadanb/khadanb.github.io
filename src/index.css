@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+/* Custom theme using Tailwind v4 CSS variables */
+@theme {
+  --color-primary: #3b82f6;
+  --color-secondary: #60a5fa;
+  --color-bg: #0f172a;
+  --color-text: #f8fafc;
+  --color-glass-bg: rgba(255, 255, 255, 0.03);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Custom animations */
+  --animate-blob: blob 20s infinite alternate;
+  --animate-scroll-bounce: scroll-bounce 2s infinite;
+
+  /* Custom shadows */
+  --shadow-glow: 0 0 20px var(--color-primary);
+
+  @keyframes blob {
+    from {
+      transform: translate(-10%, -10%);
+    }
+    to {
+      transform: translate(20%, 20%);
+    }
+  }
+
+  @keyframes scroll-bounce {
+    0% {
+      opacity: 0;
+      transform: rotate(45deg) translate(-10px, -10px);
+    }
+    50% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0;
+      transform: rotate(45deg) translate(10px, 10px);
+    }
+  }
+}
