@@ -15,55 +15,103 @@ export function Sun({ size = 80, className = '' }: SunProps) {
       <defs>
         {/* Sun glow gradient */}
         <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#fff7e0" />
-          <stop offset="40%" stopColor="#ffd54f" />
-          <stop offset="70%" stopColor="#ffb300" />
+          <stop offset="0%" stopColor="#fffef0" />
+          <stop offset="25%" stopColor="#fff8c0" />
+          <stop offset="50%" stopColor="#ffd54f" />
+          <stop offset="75%" stopColor="#ffb300" />
           <stop offset="100%" stopColor="#ff8f00" />
         </radialGradient>
 
         {/* Outer corona */}
         <radialGradient id="corona" cx="50%" cy="50%" r="50%">
-          <stop offset="60%" stopColor="#ffb300" stopOpacity="0.3" />
+          <stop offset="50%" stopColor="#ffb300" stopOpacity="0.35" />
+          <stop offset="80%" stopColor="#ff8f00" stopOpacity="0.15" />
           <stop offset="100%" stopColor="#ff6f00" stopOpacity="0" />
+        </radialGradient>
+
+        {/* Sunspot penumbra */}
+        <radialGradient id="sunspotPenumbra" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#cc7000" />
+          <stop offset="100%" stopColor="#e09000" />
+        </radialGradient>
+
+        {/* Sunspot umbra */}
+        <radialGradient id="sunspotUmbra" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#704000" />
+          <stop offset="100%" stopColor="#905000" />
         </radialGradient>
 
         {/* Sun surface texture */}
         <filter id="sunTexture">
-          <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" result="noise" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
+          <feTurbulence type="turbulence" baseFrequency="0.08" numOctaves="4" result="noise" />
+          <feColorMatrix type="saturate" values="0" in="noise" result="gray" />
+          <feBlend mode="overlay" in="SourceGraphic" in2="gray" />
         </filter>
       </defs>
 
-      {/* Corona rays */}
-      <g opacity="0.4">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <line
-            key={i}
-            x1="50"
-            y1="50"
-            x2={50 + 45 * Math.cos((i * 30 * Math.PI) / 180)}
-            y2={50 + 45 * Math.sin((i * 30 * Math.PI) / 180)}
-            stroke="#ffd54f"
-            strokeWidth="2"
-            strokeLinecap="round"
-            opacity={0.3 + (i % 2) * 0.3}
-          />
-        ))}
+      {/* Corona rays with varying lengths */}
+      <g opacity="0.35">
+        {Array.from({ length: 16 }).map((_, i) => {
+          const angle = (i * 22.5 * Math.PI) / 180;
+          const length = 42 + (i % 3) * 5;
+          return (
+            <line
+              key={i}
+              x1="50"
+              y1="50"
+              x2={50 + length * Math.cos(angle)}
+              y2={50 + length * Math.sin(angle)}
+              stroke="#ffd54f"
+              strokeWidth={1.5 + (i % 2)}
+              strokeLinecap="round"
+              opacity={0.25 + (i % 3) * 0.12}
+            />
+          );
+        })}
       </g>
 
       {/* Outer glow */}
-      <circle cx="50" cy="50" r="40" fill="url(#corona)" />
+      <circle cx="50" cy="50" r="42" fill="url(#corona)" />
 
       {/* Main sun body */}
       <circle cx="50" cy="50" r="28" fill="url(#sunGlow)" />
 
-      {/* Surface details - sunspots */}
-      <circle cx="42" cy="45" r="3" fill="#f9a825" opacity="0.5" />
-      <circle cx="55" cy="52" r="2" fill="#f9a825" opacity="0.4" />
-      <circle cx="48" cy="58" r="2.5" fill="#f9a825" opacity="0.3" />
+      {/* Solar granulation hint (subtle texture) */}
+      <circle cx="50" cy="50" r="26" fill="#ffe082" opacity="0.15" />
+
+      {/* Sunspot group 1 (active region with penumbra/umbra) */}
+      <circle cx="40" cy="45" r="5" fill="url(#sunspotPenumbra)" opacity="0.45" />
+      <circle cx="40" cy="45" r="2.5" fill="url(#sunspotUmbra)" opacity="0.6" />
+      <circle cx="44" cy="47" r="3" fill="url(#sunspotPenumbra)" opacity="0.4" />
+      <circle cx="44" cy="47" r="1.5" fill="url(#sunspotUmbra)" opacity="0.55" />
+
+      {/* Sunspot group 2 */}
+      <circle cx="58" cy="54" r="4" fill="url(#sunspotPenumbra)" opacity="0.4" />
+      <circle cx="58" cy="54" r="2" fill="url(#sunspotUmbra)" opacity="0.55" />
+      <circle cx="55" cy="56" r="2.5" fill="url(#sunspotPenumbra)" opacity="0.35" />
+      <circle cx="55" cy="56" r="1.2" fill="url(#sunspotUmbra)" opacity="0.5" />
+
+      {/* Small isolated sunspot */}
+      <circle cx="48" cy="62" r="2" fill="url(#sunspotPenumbra)" opacity="0.35" />
+      <circle cx="48" cy="62" r="1" fill="url(#sunspotUmbra)" opacity="0.45" />
+
+      {/* Facular regions (bright areas near sunspots) */}
+      <ellipse cx="35" cy="43" rx="4" ry="2" fill="#fffde7" opacity="0.2" />
+      <ellipse cx="62" cy="52" rx="3" ry="1.5" fill="#fffde7" opacity="0.18" />
+
+      {/* Limb darkening */}
+      <circle
+        cx="50"
+        cy="50"
+        r="28"
+        fill="none"
+        stroke="#ff6f00"
+        strokeWidth="2"
+        opacity="0.2"
+      />
 
       {/* Bright center highlight */}
-      <circle cx="45" cy="42" r="8" fill="#fffde7" opacity="0.4" />
+      <circle cx="44" cy="40" r="10" fill="#fffde7" opacity="0.35" />
     </svg>
   );
 }
