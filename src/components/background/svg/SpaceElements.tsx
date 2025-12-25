@@ -155,10 +155,6 @@ export function SpaceElements() {
     };
   }, []);
 
-  // Total scrollable distance
-  const totalScroll = docHeight - viewportHeight;
-  const scrollProgress = totalScroll > 0 ? scrollY / totalScroll : 0;
-
   return (
     <div className="absolute inset-0 overflow-hidden">
       {CELESTIAL_BODIES.map((body) => {
