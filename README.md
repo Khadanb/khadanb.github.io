@@ -6,18 +6,6 @@ An immersive personal portfolio website featuring a parallax solar system backgr
 
 ---
 
-## Screenshots
-
-<!-- Add screenshots/GIFs here -->
-
-| Hero Section | Parallax Effect | Experience Tree |
-|:---:|:---:|:---:|
-| ![Hero](./docs/screenshots/hero.png) | ![Parallax](./docs/screenshots/parallax.gif) | ![Tree](./docs/screenshots/tree.gif) |
-
-> *Screenshots coming soon*
-
----
-
 ## Tech Stack
 
 | Technology | Version | Purpose |
@@ -27,7 +15,6 @@ An immersive personal portfolio website featuring a parallax solar system backgr
 | Vite | 7.2.4 | Build Tool & Dev Server |
 | Tailwind CSS | 4.1.18 | Utility-First Styling (v4 with CSS Variables) |
 | lucide-react | 0.562.0 | Icon Library |
-| react-icons | 5.5.0 | Additional Icons |
 
 ---
 
@@ -215,7 +202,6 @@ Glass card recipe:
 | `tailwindcss` | Utility-first CSS with v4 features |
 | `vite` | Fast build tool with HMR |
 | `lucide-react` | Clean, consistent icon set |
-| `react-icons` | Extended icon library (Game Icons for planets) |
 | `typescript` | Static type checking |
 
 ---

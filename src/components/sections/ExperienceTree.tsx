@@ -1,23 +1,76 @@
-import { useRef, createRef, useCallback } from 'react';
+import { useRef, createRef, useCallback, useEffect } from 'react';
 import { TreeLeaf } from '../ui/TreeLeaf';
 import { experiences } from '../../data/experiences';
-import { useThrottledScroll } from '../../hooks';
+import { useThrottledScroll, useResizeEvent } from '../../hooks';
 import { APP_CONFIG } from '../../config/app';
 
 const { TREE_OVERSHOOT_DIVISOR } = APP_CONFIG.scroll;
+
+// Cached dimension data to avoid getBoundingClientRect on every scroll
+interface CachedDimensions {
+  stemOffsetTop: number;
+  stemHeight: number;
+  branchData: Array<{
+    offsetTop: number;
+    height: number;
+    litPortion: HTMLDivElement | null;
+    mobileBranch: HTMLDivElement | null;
+  }>;
+}
 
 export function ExperienceTree() {
   const stemRef = useRef<HTMLDivElement>(null);
   const stemContainerRef = useRef<HTMLDivElement>(null);
   const branchRefs = useRef(experiences.map(() => createRef<HTMLDivElement>()));
 
-  const handleScroll = useCallback(() => {
-    if (!stemRef.current || !stemContainerRef.current) return;
+  // Cache element dimensions to avoid expensive getBoundingClientRect calls
+  const cachedDimensionsRef = useRef<CachedDimensions | null>(null);
 
-    const stemContainerRect = stemContainerRef.current.getBoundingClientRect();
+  // Update cached dimensions (only on mount and resize)
+  const updateCachedDimensions = useCallback(() => {
+    if (!stemContainerRef.current) return;
+
+    const stemRect = stemContainerRef.current.getBoundingClientRect();
+    const scrollY = window.scrollY;
+
+    cachedDimensionsRef.current = {
+      // Convert viewport-relative to document-relative
+      stemOffsetTop: stemRect.top + scrollY,
+      stemHeight: stemRect.height,
+      branchData: branchRefs.current.map(branchRef => {
+        const branch = branchRef.current;
+        if (!branch) {
+          return { offsetTop: 0, height: 0, litPortion: null, mobileBranch: null };
+        }
+        const branchRect = branch.getBoundingClientRect();
+        return {
+          offsetTop: branchRect.top + scrollY,
+          height: branchRect.height,
+          litPortion: branch.querySelector<HTMLDivElement>('[data-branch-lit]'),
+          mobileBranch: branch.parentElement?.querySelector<HTMLDivElement>('[data-branch-lit-mobile]') ?? null,
+        };
+      }),
+    };
+  }, []);
+
+  // Initialize dimensions on mount
+  useEffect(() => {
+    // Small delay to ensure DOM is fully rendered
+    const timeoutId = setTimeout(updateCachedDimensions, 50);
+    return () => clearTimeout(timeoutId);
+  }, [updateCachedDimensions]);
+
+  // Update dimensions on resize
+  useResizeEvent(updateCachedDimensions);
+
+  const handleScroll = useCallback((scrollY: number) => {
+    if (!stemRef.current || !cachedDimensionsRef.current) return;
+
+    const { stemOffsetTop, stemHeight, branchData } = cachedDimensionsRef.current;
     const windowHeight = window.innerHeight;
-    const stemTop = stemContainerRect.top;
-    const stemHeight = stemContainerRect.height;
+
+    // Calculate viewport-relative position from cached document-relative position
+    const stemTop = stemOffsetTop - scrollY;
 
     // Calculate progress based on stem container position
     let progress = (windowHeight - stemTop) / (stemHeight + windowHeight);
@@ -28,18 +81,10 @@ export function ExperienceTree() {
 
     const litStemBottom = stemTop + stemHeight * progress;
 
-    // Update each branch based on whether the stem has reached it
-    branchRefs.current.forEach((branchRef) => {
-      const branch = branchRef.current;
-      if (!branch) return;
-
-      const branchRect = branch.getBoundingClientRect();
-      const branchY = branchRect.top + branchRect.height / 2;
-
-      // Find the lit portion div inside the branch using data attribute
-      const litPortion = branch.querySelector<HTMLDivElement>('[data-branch-lit]');
-      // Also find mobile branch lit portion (sibling element)
-      const mobileBranch = branch.parentElement?.querySelector<HTMLDivElement>('[data-branch-lit-mobile]');
+    // Update each branch using cached data
+    branchData.forEach(({ offsetTop, height, litPortion, mobileBranch }) => {
+      // Calculate viewport-relative Y position
+      const branchY = (offsetTop - scrollY) + height / 2;
 
       if (litPortion) {
         if (litStemBottom >= branchY) {

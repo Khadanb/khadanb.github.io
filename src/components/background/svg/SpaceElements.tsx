@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useCallback, useEffect } from 'react';
 import {
   Sun,
   Moon,
@@ -11,7 +11,7 @@ import {
   Uranus,
   Neptune,
 } from './celestial';
-import { useScrollY } from '../../../hooks/useThrottledScroll';
+import { useThrottledScroll } from '../../../hooks/useThrottledScroll';
 import { useWindowDimensions } from '../../../hooks/useResizeListener';
 import { APP_CONFIG } from '../../../config/app';
 
@@ -134,8 +134,10 @@ const CELESTIAL_BODIES: CelestialBody[] = [
 ];
 
 export function SpaceElements() {
-  const scrollY = useScrollY();
   const { height: viewportHeight, docHeight } = useWindowDimensions();
+
+  // Refs to each planet's DOM element for direct manipulation
+  const elementRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   // Memoize position calculations that depend on docHeight
   const celestialPositions = useMemo(() =>
@@ -149,32 +151,57 @@ export function SpaceElements() {
   const centerY = viewportHeight * VIEWPORT_CENTER_RATIO;
   const maxDistance = viewportHeight * MAX_DISTANCE_RATIO;
 
+  // Update positions via direct DOM manipulation (no React re-renders)
+  const updatePositions = useCallback((scrollY: number) => {
+    celestialPositions.forEach((body) => {
+      const element = elementRefs.current.get(body.id);
+      if (!element) return;
+
+      const baseY = body.documentY - scrollY * body.parallaxSpeed * SPACE_ELEMENTS_MULTIPLIER;
+      const distanceFromCenter = Math.abs(baseY - centerY);
+      const opacity = Math.max(0, 1 - distanceFromCenter / maxDistance);
+
+      // Hide if invisible or off screen
+      if (opacity <= SPACE_OPACITY_THRESHOLD || baseY < -body.size || baseY > viewportHeight + body.size) {
+        element.style.display = 'none';
+      } else {
+        element.style.display = '';
+        element.style.transform = `translate(-50%, ${baseY}px)`;
+        element.style.opacity = String(opacity);
+      }
+    });
+  }, [celestialPositions, centerY, maxDistance, viewportHeight]);
+
+  // Set up scroll listener
+  useThrottledScroll(updatePositions);
+
+  // Initial position update
+  useEffect(() => {
+    updatePositions(window.scrollY);
+  }, [updatePositions]);
+
+  // Ref callback to store element references
+  const setElementRef = useCallback((id: string, element: HTMLDivElement | null) => {
+    if (element) {
+      elementRefs.current.set(id, element);
+    } else {
+      elementRefs.current.delete(id);
+    }
+  }, []);
+
   return (
     <div className="absolute inset-0 overflow-hidden">
       {celestialPositions.map((body) => {
-        // baseY: screen position with parallax effect
-        const baseY = body.documentY - scrollY * body.parallaxSpeed * SPACE_ELEMENTS_MULTIPLIER;
-
-        // Calculate opacity based on position in viewport
-        const distanceFromCenter = Math.abs(baseY - centerY);
-        const opacity = Math.max(0, 1 - distanceFromCenter / maxDistance);
-
-        // Don't render if completely invisible or way off screen
-        if (opacity <= SPACE_OPACITY_THRESHOLD || baseY < -body.size || baseY > viewportHeight + body.size) {
-          return null;
-        }
-
         const Component = body.component;
 
         return (
           <div
             key={body.id}
+            ref={(el) => setElementRef(body.id, el)}
             className="absolute pointer-events-none"
             style={{
               left: body.xPosition,
               top: 0,
-              transform: `translate(-50%, ${baseY}px)`,
-              opacity,
               willChange: 'transform, opacity',
             }}
           >
