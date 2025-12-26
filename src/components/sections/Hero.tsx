@@ -17,7 +17,7 @@ export function Hero() {
             Brandon Khadan
           </h1>
           <p className="text-lg sm:text-xl text-slate-400">
-            Building something amazing on GitHub Pages.
+            Explore our solar system with my interactive CV!
           </p>
         </div>
       </div>
