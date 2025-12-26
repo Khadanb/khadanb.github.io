@@ -68,12 +68,6 @@ function initializeAsteroids(viewportWidth: number): BeltAsteroid[] {
     const angleDeg = randomInRange(...CONFIG.angleRange);
     const angleRad = (angleDeg * Math.PI) / 180;
 
-    // Stagger spawn times so asteroids don't all start at once
-    const staggeredSpawnTime = now - randomInRange(0, 30000);
-
-    // Random starting X position (can be anywhere across screen for initial spawn)
-    const startX = randomInRange(-size, viewportWidth + size);
-
     // Determine if this asteroid is a collider (can hit panels)
     const isCollider = size >= COLLISION_CONFIG.minColliderSize &&
                        Math.random() < COLLISION_CONFIG.colliderRatio;
@@ -86,6 +80,19 @@ function initializeAsteroids(viewportWidth: number): BeltAsteroid[] {
     const velocityX = speed * speedMultiplier;
     // Slight vertical drift (can be up or down)
     const velocityY = (Math.random() > 0.5 ? 1 : -1) * speed * speedMultiplier * Math.tan(angleRad);
+
+    // Random "age" of asteroid to stagger their phases (for natural movement variation)
+    const age = randomInRange(0, 30000);
+    const staggeredSpawnTime = now - age;
+
+    // Where we want the asteroid to appear initially (scattered across screen)
+    const targetX = randomInRange(-finalSize, viewportWidth + finalSize);
+
+    // Calculate starting position so asteroid is at targetX NOW
+    // Position formula: currentX = startX + velocityX * elapsed
+    // We want: targetX = startX + velocityX * age
+    // Therefore: startX = targetX - velocityX * age
+    const startX = targetX - velocityX * age;
 
     asteroids.push({
       id: generateId(),
@@ -236,9 +243,14 @@ export function AsteroidBelt() {
             element.style.display = 'none';
             return;
           } else {
-            // Apply scale transform
-            element.style.transform = `translate(-50%, -50%) rotate(${rotation}deg) scale(${scale})`;
+            // Apply scale transform with position (using transform-only for performance)
+            element.style.transform = `translate(${currentX}px, ${baseY}px) translate(-50%, -50%) rotate(${rotation}deg) scale(${scale})`;
+            element.style.opacity = String(opacity);
           }
+        } else {
+          // During initial slowdown phase, just update position
+          element.style.transform = `translate(${currentX}px, ${baseY}px) translate(-50%, -50%) rotate(${rotation}deg)`;
+          element.style.opacity = String(opacity);
         }
       }
 
@@ -282,11 +294,11 @@ export function AsteroidBelt() {
         element.style.display = 'none';
       } else {
         element.style.display = '';
+        // Use transform for all positioning to avoid layout thrashing
+        // translate() uses the compositor thread, while left/top trigger layout recalculations
         if (asteroid.collisionState !== 'colliding') {
-          element.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+          element.style.transform = `translate(${currentX}px, ${baseY}px) translate(-50%, -50%) rotate(${rotation}deg)`;
         }
-        element.style.left = `${currentX}px`;
-        element.style.top = `${baseY}px`;
         element.style.opacity = String(opacity);
       }
     });
@@ -340,6 +352,9 @@ export function AsteroidBelt() {
             ref={(el) => setElementRef(asteroid.id, el)}
             className="absolute pointer-events-none"
             style={{
+              // Position at origin, use transform for actual positioning (avoids layout thrashing)
+              left: 0,
+              top: 0,
               willChange: 'transform, opacity',
             }}
           >
@@ -356,6 +371,9 @@ export function AsteroidBelt() {
             ref={(el) => setElementRef(asteroid.id, el)}
             className="absolute pointer-events-none"
             style={{
+              // Position at origin, use transform for actual positioning (avoids layout thrashing)
+              left: 0,
+              top: 0,
               willChange: 'transform, opacity',
             }}
           >

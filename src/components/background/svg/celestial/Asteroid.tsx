@@ -1,3 +1,5 @@
+import { useId } from 'react';
+
 interface AsteroidProps {
   size?: number;
   className?: string;
@@ -5,6 +7,8 @@ interface AsteroidProps {
 }
 
 export function Asteroid({ size = 30, className = '', variant = 0 }: AsteroidProps) {
+  // Generate unique ID for this instance to prevent gradient ID collisions
+  const instanceId = useId();
   // Six different asteroid shape variants for variety
   const asteroidPaths = [
     // Variant 0: Potato-shaped
@@ -31,7 +35,7 @@ export function Asteroid({ size = 30, className = '', variant = 0 }: AsteroidPro
     >
       <defs>
         {/* Rocky surface gradient */}
-        <radialGradient id={`asteroidSurface${variant}`} cx="35%" cy="35%" r="70%">
+        <radialGradient id={`asteroidSurface${instanceId}`} cx="35%" cy="35%" r="70%">
           <stop offset="0%" stopColor="#9e9e9e" />
           <stop offset="40%" stopColor="#757575" />
           <stop offset="70%" stopColor="#5d4e37" />
@@ -39,13 +43,13 @@ export function Asteroid({ size = 30, className = '', variant = 0 }: AsteroidPro
         </radialGradient>
 
         {/* Crater shadow gradient */}
-        <radialGradient id={`asteroidCrater${variant}`} cx="40%" cy="40%" r="60%">
+        <radialGradient id={`asteroidCrater${instanceId}`} cx="40%" cy="40%" r="60%">
           <stop offset="0%" stopColor="#4a4a4a" />
           <stop offset="100%" stopColor="#2d2d2d" />
         </radialGradient>
 
         {/* Highlight for 3D effect */}
-        <radialGradient id={`asteroidHighlight${variant}`} cx="30%" cy="30%" r="50%">
+        <radialGradient id={`asteroidHighlight${instanceId}`} cx="30%" cy="30%" r="50%">
           <stop offset="0%" stopColor="#bdbdbd" stopOpacity="0.4" />
           <stop offset="100%" stopColor="#757575" stopOpacity="0" />
         </radialGradient>
@@ -54,18 +58,18 @@ export function Asteroid({ size = 30, className = '', variant = 0 }: AsteroidPro
       {/* Main asteroid body */}
       <path
         d={asteroidPaths[variant]}
-        fill={`url(#asteroidSurface${variant})`}
+        fill={`url(#asteroidSurface${instanceId})`}
       />
 
       {/* Surface texture - craters and bumps */}
       {variant === 0 && (
         <>
           {/* Large crater */}
-          <ellipse cx="24" cy="18" rx="6" ry="5" fill={`url(#asteroidCrater${variant})`} opacity="0.5" />
+          <ellipse cx="24" cy="18" rx="6" ry="5" fill={`url(#asteroidCrater${instanceId})`} opacity="0.5" />
           <ellipse cx="23" cy="17" rx="4" ry="3" fill="#3a3a3a" opacity="0.4" />
           {/* Medium craters */}
-          <circle cx="14" cy="24" r="3" fill={`url(#asteroidCrater${variant})`} opacity="0.45" />
-          <circle cx="30" cy="28" r="2.5" fill={`url(#asteroidCrater${variant})`} opacity="0.4" />
+          <circle cx="14" cy="24" r="3" fill={`url(#asteroidCrater${instanceId})`} opacity="0.45" />
+          <circle cx="30" cy="28" r="2.5" fill={`url(#asteroidCrater${instanceId})`} opacity="0.4" />
           {/* Small craters */}
           <circle cx="18" cy="12" r="1.5" fill="#4a4a4a" opacity="0.4" />
           <circle cx="32" cy="16" r="1.5" fill="#4a4a4a" opacity="0.35" />
@@ -76,9 +80,9 @@ export function Asteroid({ size = 30, className = '', variant = 0 }: AsteroidPro
       {variant === 1 && (
         <>
           {/* Angular surface details */}
-          <circle cx="22" cy="16" r="5" fill={`url(#asteroidCrater${variant})`} opacity="0.5" />
-          <circle cx="28" cy="26" r="3.5" fill={`url(#asteroidCrater${variant})`} opacity="0.45" />
-          <circle cx="14" cy="22" r="3" fill={`url(#asteroidCrater${variant})`} opacity="0.4" />
+          <circle cx="22" cy="16" r="5" fill={`url(#asteroidCrater${instanceId})`} opacity="0.5" />
+          <circle cx="28" cy="26" r="3.5" fill={`url(#asteroidCrater${instanceId})`} opacity="0.45" />
+          <circle cx="14" cy="22" r="3" fill={`url(#asteroidCrater${instanceId})`} opacity="0.4" />
           {/* Ridge line */}
           <path
             d="M 12 14 Q 22 12, 32 18"
@@ -95,9 +99,9 @@ export function Asteroid({ size = 30, className = '', variant = 0 }: AsteroidPro
       {variant === 2 && (
         <>
           {/* Elongated asteroid details */}
-          <ellipse cx="20" cy="18" rx="5" ry="4" fill={`url(#asteroidCrater${variant})`} opacity="0.5" />
-          <ellipse cx="32" cy="20" rx="3.5" ry="3" fill={`url(#asteroidCrater${variant})`} opacity="0.45" />
-          <circle cx="12" cy="22" r="2.5" fill={`url(#asteroidCrater${variant})`} opacity="0.4" />
+          <ellipse cx="20" cy="18" rx="5" ry="4" fill={`url(#asteroidCrater${instanceId})`} opacity="0.5" />
+          <ellipse cx="32" cy="20" rx="3.5" ry="3" fill={`url(#asteroidCrater${instanceId})`} opacity="0.45" />
+          <circle cx="12" cy="22" r="2.5" fill={`url(#asteroidCrater${instanceId})`} opacity="0.4" />
           {/* Surface grooves */}
           <path
             d="M 10 20 Q 22 18, 36 22"
@@ -114,9 +118,9 @@ export function Asteroid({ size = 30, className = '', variant = 0 }: AsteroidPro
       {variant === 3 && (
         <>
           {/* Round asteroid details - simple craters */}
-          <circle cx="22" cy="18" r="5" fill={`url(#asteroidCrater${variant})`} opacity="0.5" />
-          <circle cx="14" cy="26" r="3" fill={`url(#asteroidCrater${variant})`} opacity="0.4" />
-          <circle cx="30" cy="24" r="2.5" fill={`url(#asteroidCrater${variant})`} opacity="0.4" />
+          <circle cx="22" cy="18" r="5" fill={`url(#asteroidCrater${instanceId})`} opacity="0.5" />
+          <circle cx="14" cy="26" r="3" fill={`url(#asteroidCrater${instanceId})`} opacity="0.4" />
+          <circle cx="30" cy="24" r="2.5" fill={`url(#asteroidCrater${instanceId})`} opacity="0.4" />
           <circle cx="20" cy="30" r="1.5" fill="#4a4a4a" opacity="0.35" />
           <circle cx="28" cy="14" r="1" fill="#4a4a4a" opacity="0.3" />
         </>
@@ -125,8 +129,8 @@ export function Asteroid({ size = 30, className = '', variant = 0 }: AsteroidPro
       {variant === 4 && (
         <>
           {/* Jagged asteroid details - angular features */}
-          <circle cx="22" cy="20" r="4" fill={`url(#asteroidCrater${variant})`} opacity="0.5" />
-          <circle cx="32" cy="24" r="3" fill={`url(#asteroidCrater${variant})`} opacity="0.45" />
+          <circle cx="22" cy="20" r="4" fill={`url(#asteroidCrater${instanceId})`} opacity="0.5" />
+          <circle cx="32" cy="24" r="3" fill={`url(#asteroidCrater${instanceId})`} opacity="0.45" />
           {/* Ridge lines for jagged look */}
           <path
             d="M 10 16 L 20 14 L 30 18"
@@ -149,9 +153,9 @@ export function Asteroid({ size = 30, className = '', variant = 0 }: AsteroidPro
       {variant === 5 && (
         <>
           {/* Flat/disc asteroid details - horizontal features */}
-          <ellipse cx="22" cy="20" rx="6" ry="3" fill={`url(#asteroidCrater${variant})`} opacity="0.5" />
-          <ellipse cx="14" cy="22" rx="3" ry="2" fill={`url(#asteroidCrater${variant})`} opacity="0.4" />
-          <ellipse cx="32" cy="20" rx="2.5" ry="1.5" fill={`url(#asteroidCrater${variant})`} opacity="0.4" />
+          <ellipse cx="22" cy="20" rx="6" ry="3" fill={`url(#asteroidCrater${instanceId})`} opacity="0.5" />
+          <ellipse cx="14" cy="22" rx="3" ry="2" fill={`url(#asteroidCrater${instanceId})`} opacity="0.4" />
+          <ellipse cx="32" cy="20" rx="2.5" ry="1.5" fill={`url(#asteroidCrater${instanceId})`} opacity="0.4" />
           {/* Horizontal groove */}
           <path
             d="M 10 20 Q 22 18, 34 20"
@@ -166,7 +170,7 @@ export function Asteroid({ size = 30, className = '', variant = 0 }: AsteroidPro
       {/* Highlight overlay for 3D effect */}
       <path
         d={asteroidPaths[variant]}
-        fill={`url(#asteroidHighlight${variant})`}
+        fill={`url(#asteroidHighlight${instanceId})`}
       />
     </svg>
   );

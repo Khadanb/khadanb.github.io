@@ -1,4 +1,4 @@
-import { createContext, useContext, useRef, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useRef, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import { useWindowEvent } from '../hooks/useWindowEvent';
 
 interface ScrollContextValue {
@@ -48,10 +48,11 @@ export function ScrollProvider({ children }: ScrollProviderProps) {
     };
   }, []);
 
-  const value: ScrollContextValue = {
+  // Memoize context value to prevent unnecessary re-renders of consumers
+  const value = useMemo<ScrollContextValue>(() => ({
     getScrollY,
     subscribe,
-  };
+  }), [getScrollY, subscribe]);
 
   return (
     <ScrollContext.Provider value={value}>
@@ -81,9 +82,14 @@ export function useScrollRef(): React.RefObject<number> {
   const scrollRef = useRef(getScrollY());
 
   // Keep ref updated with latest scroll position
-  subscribe(useCallback((scrollY: number) => {
-    scrollRef.current = scrollY;
-  }, []));
+  // FIX: Use useEffect to properly subscribe/unsubscribe instead of calling during render
+  useEffect(() => {
+    const unsubscribe = subscribe((scrollY: number) => {
+      scrollRef.current = scrollY;
+    });
+
+    return unsubscribe;
+  }, [subscribe]);
 
   return scrollRef;
 }

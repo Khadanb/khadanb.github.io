@@ -1,7 +1,6 @@
-import { useRef, forwardRef, useEffect } from 'react';
+import { useRef, forwardRef } from 'react';
 import type { Experience } from '../../types';
-import { useIntersectionObserver } from '../../hooks';
-import { useCollisionContext } from '../../context/CollisionContext';
+import { useIntersectionObserver, usePanelRegistration } from '../../hooks';
 
 interface TreeLeafProps {
   experience: Experience;
@@ -21,15 +20,7 @@ export const TreeLeaf = forwardRef<HTMLDivElement, TreeLeafProps>(
     });
 
     // Register panel for collision detection
-    const { registerPanel, unregisterPanel } = useCollisionContext();
-
-    useEffect(() => {
-      if (cardRef.current) {
-        const panelId = `treeleaf-${experience.company}-${index}`;
-        registerPanel(panelId, cardRef.current);
-        return () => unregisterPanel(panelId);
-      }
-    }, [registerPanel, unregisterPanel, experience.company, index]);
+    usePanelRegistration(`treeleaf-${experience.company}-${index}`, cardRef);
 
     return (
       <div

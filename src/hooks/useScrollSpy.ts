@@ -1,14 +1,35 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { NAV_ITEMS, type SectionId } from '../config/navigation';
 
 export type { SectionId };
 
+// Reduced thresholds for better performance (4 values instead of 11)
+const INTERSECTION_THRESHOLDS = [0, 0.25, 0.5, 1];
+
+// Debounce delay for URL updates (ms)
+const URL_UPDATE_DEBOUNCE_MS = 100;
+
 export function useScrollSpy(): SectionId {
   const [activeSection, setActiveSection] = useState<SectionId>('home');
+  const sectionVisibilityRef = useRef<Map<SectionId, number>>(new Map());
+  const urlUpdateTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastActiveSectionRef = useRef<SectionId>('home');
+
+  // Debounced URL update to reduce history pollution
+  const updateUrlHash = useCallback((sectionId: SectionId) => {
+    if (urlUpdateTimeoutRef.current) {
+      clearTimeout(urlUpdateTimeoutRef.current);
+    }
+
+    urlUpdateTimeoutRef.current = setTimeout(() => {
+      if (window.location.hash !== `#${sectionId}`) {
+        history.replaceState(null, '', `#${sectionId}`);
+      }
+    }, URL_UPDATE_DEBOUNCE_MS);
+  }, []);
 
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
-    const sectionVisibility = new Map<SectionId, number>();
 
     NAV_ITEMS.forEach(({ id }) => {
       const element = document.getElementById(id);
@@ -17,30 +38,29 @@ export function useScrollSpy(): SectionId {
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            sectionVisibility.set(id, entry.intersectionRatio);
+            sectionVisibilityRef.current.set(id, entry.intersectionRatio);
+          });
 
-            // Find the section with highest visibility
-            let maxRatio = 0;
-            let mostVisibleSection: SectionId = 'home';
+          // Find the section with highest visibility
+          let maxRatio = 0;
+          let mostVisibleSection: SectionId = 'home';
 
-            sectionVisibility.forEach((ratio, sectionId) => {
-              if (ratio > maxRatio) {
-                maxRatio = ratio;
-                mostVisibleSection = sectionId;
-              }
-            });
-
-            if (maxRatio > 0) {
-              setActiveSection(mostVisibleSection);
-              // Update URL hash without triggering scroll
-              if (window.location.hash !== `#${mostVisibleSection}`) {
-                history.replaceState(null, '', `#${mostVisibleSection}`);
-              }
+          sectionVisibilityRef.current.forEach((ratio, sectionId) => {
+            if (ratio > maxRatio) {
+              maxRatio = ratio;
+              mostVisibleSection = sectionId;
             }
           });
+
+          // Only update state if the active section actually changed
+          if (maxRatio > 0 && mostVisibleSection !== lastActiveSectionRef.current) {
+            lastActiveSectionRef.current = mostVisibleSection;
+            setActiveSection(mostVisibleSection);
+            updateUrlHash(mostVisibleSection);
+          }
         },
         {
-          threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+          threshold: INTERSECTION_THRESHOLDS,
           rootMargin: '-10% 0px -10% 0px',
         }
       );
@@ -63,8 +83,11 @@ export function useScrollSpy(): SectionId {
 
     return () => {
       observers.forEach((observer) => observer.disconnect());
+      if (urlUpdateTimeoutRef.current) {
+        clearTimeout(urlUpdateTimeoutRef.current);
+      }
     };
-  }, []);
+  }, [updateUrlHash]);
 
   return activeSection;
 }

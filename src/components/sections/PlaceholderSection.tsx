@@ -1,6 +1,6 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import type { SectionId } from '../../config/navigation';
-import { useCollisionContext } from '../../context/CollisionContext';
+import { usePanelRegistration } from '../../hooks';
 
 interface PlaceholderSectionProps {
   id: SectionId;
@@ -11,14 +11,7 @@ interface PlaceholderSectionProps {
 
 export function PlaceholderSection({ id, icon: Icon, title, description }: PlaceholderSectionProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const { registerPanel, unregisterPanel } = useCollisionContext();
-
-  useEffect(() => {
-    if (cardRef.current) {
-      registerPanel(`placeholder-${id}`, cardRef.current);
-      return () => unregisterPanel(`placeholder-${id}`);
-    }
-  }, [registerPanel, unregisterPanel, id]);
+  usePanelRegistration(`placeholder-${id}`, cardRef);
 
   return (
     <section id={id} className="min-h-screen py-16 sm:py-32 flex items-center">

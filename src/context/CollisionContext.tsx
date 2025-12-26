@@ -1,9 +1,15 @@
-import { createContext, useContext, useRef, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useRef, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import { useResizeListener } from '../hooks/useResizeListener';
 import type { Bounds, Point } from '../utils/collision';
 import { APP_CONFIG } from '../config/app';
 
 const { collision: CONFIG } = APP_CONFIG;
+
+/** Track active ripple timeouts for cleanup */
+interface RippleTimeout {
+  timeoutId: ReturnType<typeof setTimeout>;
+  element: HTMLDivElement;
+}
 
 interface PanelEntry {
   element: HTMLElement;
@@ -36,6 +42,7 @@ interface CollisionProviderProps {
 export function CollisionProvider({ children }: CollisionProviderProps) {
   const panelsRef = useRef<Map<string, PanelEntry>>(new Map());
   const cacheValidRef = useRef(false);
+  const activeRipplesRef = useRef<Set<RippleTimeout>>(new Set());
 
   // Update all panel bounds from current DOM positions
   const updateAllBounds = useCallback(() => {
@@ -109,22 +116,40 @@ export function CollisionProvider({ children }: CollisionProviderProps) {
 
     entry.element.appendChild(ripple);
 
-    // Remove after animation completes
-    setTimeout(() => {
-      ripple.remove();
-    }, CONFIG.rippleDuration);
+    // Track the timeout for cleanup
+    const rippleTimeout: RippleTimeout = {
+      timeoutId: setTimeout(() => {
+        ripple.remove();
+        activeRipplesRef.current.delete(rippleTimeout);
+      }, CONFIG.rippleDuration),
+      element: ripple,
+    };
+
+    activeRipplesRef.current.add(rippleTimeout);
   }, []);
 
   // Invalidate cache on window resize
   useResizeListener(invalidateBoundsCache);
 
-  const value: CollisionContextValue = {
+  // Cleanup active ripples on unmount
+  useEffect(() => {
+    return () => {
+      activeRipplesRef.current.forEach(({ timeoutId, element }) => {
+        clearTimeout(timeoutId);
+        element.remove();
+      });
+      activeRipplesRef.current.clear();
+    };
+  }, []);
+
+  // Memoize context value to prevent unnecessary re-renders of consumers
+  const value = useMemo<CollisionContextValue>(() => ({
     registerPanel,
     unregisterPanel,
     getPanelBounds,
     triggerRipple,
     invalidateBoundsCache,
-  };
+  }), [registerPanel, unregisterPanel, getPanelBounds, triggerRipple, invalidateBoundsCache]);
 
   return (
     <CollisionContext.Provider value={value}>

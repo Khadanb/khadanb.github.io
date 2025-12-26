@@ -1,17 +1,10 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { ScrollIndicator } from '../ui/ScrollIndicator';
-import { useCollisionContext } from '../../context/CollisionContext';
+import { usePanelRegistration } from '../../hooks';
 
 export function Hero() {
   const cardRef = useRef<HTMLDivElement>(null);
-  const { registerPanel, unregisterPanel } = useCollisionContext();
-
-  useEffect(() => {
-    if (cardRef.current) {
-      registerPanel('hero-card', cardRef.current);
-      return () => unregisterPanel('hero-card');
-    }
-  }, [registerPanel, unregisterPanel]);
+  usePanelRegistration('hero-card', cardRef);
 
   return (
     <section id="home" className="h-screen flex items-center justify-center text-center relative px-4">
