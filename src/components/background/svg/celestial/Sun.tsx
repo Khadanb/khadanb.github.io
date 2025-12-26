@@ -52,11 +52,12 @@ export function Sun({ size = 80, className = '' }: SunProps) {
       {/* Corona rays with varying lengths */}
       <g opacity="0.35">
         {Array.from({ length: 16 }).map((_, i) => {
-          const angle = (i * 22.5 * Math.PI) / 180;
+          const angleDeg = i * 22.5;
+          const angle = (angleDeg * Math.PI) / 180;
           const length = 42 + (i % 3) * 5;
           return (
             <line
-              key={i}
+              key={`ray-${angleDeg}`}
               x1="50"
               y1="50"
               x2={50 + length * Math.cos(angle)}

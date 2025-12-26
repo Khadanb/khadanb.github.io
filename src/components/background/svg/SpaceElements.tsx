@@ -13,12 +13,14 @@ import {
 } from './celestial';
 import { useScrollY } from '../../../hooks/useThrottledScroll';
 import { useWindowDimensions } from '../../../hooks/useResizeListener';
+import { APP_CONFIG } from '../../../config/app';
 
-// Constants for parallax calculations
-const PARALLAX_MULTIPLIER = 2;
-const OPACITY_THRESHOLD = 0.01;
-const VIEWPORT_CENTER_RATIO = 0.5;
-const MAX_DISTANCE_RATIO = 0.8;
+const {
+  SPACE_ELEMENTS_MULTIPLIER,
+  SPACE_OPACITY_THRESHOLD,
+  VIEWPORT_CENTER_RATIO,
+  MAX_DISTANCE_RATIO,
+} = APP_CONFIG.parallax;
 
 interface CelestialBody {
   id: string;
@@ -151,14 +153,14 @@ export function SpaceElements() {
     <div className="absolute inset-0 overflow-hidden">
       {celestialPositions.map((body) => {
         // baseY: screen position with parallax effect
-        const baseY = body.documentY - scrollY * body.parallaxSpeed * PARALLAX_MULTIPLIER;
+        const baseY = body.documentY - scrollY * body.parallaxSpeed * SPACE_ELEMENTS_MULTIPLIER;
 
         // Calculate opacity based on position in viewport
         const distanceFromCenter = Math.abs(baseY - centerY);
         const opacity = Math.max(0, 1 - distanceFromCenter / maxDistance);
 
         // Don't render if completely invisible or way off screen
-        if (opacity <= OPACITY_THRESHOLD || baseY < -body.size || baseY > viewportHeight + body.size) {
+        if (opacity <= SPACE_OPACITY_THRESHOLD || baseY < -body.size || baseY > viewportHeight + body.size) {
           return null;
         }
 

@@ -30,7 +30,9 @@ export function StarField({ starCount = 200, className = '' }: StarFieldProps) {
 
     const ctx = canvas.getContext('2d');
     if (!ctx) {
-      console.warn('StarField: Canvas 2D context not available');
+      if (import.meta.env.DEV) {
+        console.warn('StarField: Canvas 2D context not available');
+      }
       return;
     }
 

@@ -1,32 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Comet, Asteroid, Satellite } from './svg/celestial';
+import { useScrollContext } from '../../context/ScrollContext';
+import { APP_CONFIG } from '../../config/app';
+import { randomInRange, generateId } from '../../utils/animation';
 
-// Configuration for moderate frequency
-const CONFIG = {
-  comet: {
-    spawnInterval: [8000, 15000] as [number, number],
-    speed: [0.15, 0.25] as [number, number],
-    sizeRange: [50, 90] as [number, number],
-    maxActive: 2,
-    angleRange: [20, 70] as [number, number],
-  },
-  asteroid: {
-    spawnInterval: [5000, 10000] as [number, number],
-    speed: [0.08, 0.15] as [number, number],
-    sizeRange: [18, 35] as [number, number],
-    maxActive: 5,
-    angleRange: [15, 75] as [number, number],
-  },
-  satellite: {
-    spawnInterval: [15000, 25000] as [number, number],
-    speed: [0.03, 0.06] as [number, number],
-    sizeRange: [30, 50] as [number, number],
-    maxActive: 2,
-    angleRange: [0, 20] as [number, number],
-  },
-};
+const { movingObjects: CONFIG } = APP_CONFIG;
 
 type ObjectType = 'comet' | 'asteroid' | 'satellite';
+type AsteroidVariant = 0 | 1 | 2;
 
 interface MovingObject {
   id: string;
@@ -38,32 +19,14 @@ interface MovingObject {
   velocityY: number;
   size: number;
   rotation: number;
-  variant?: number;
-}
-
-function randomInRange(min: number, max: number): number {
-  return min + Math.random() * (max - min);
-}
-
-function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  variant?: AsteroidVariant;
 }
 
 export function MovingObjects() {
   const [objects, setObjects] = useState<MovingObject[]>([]);
-  const scrollYRef = useRef(0);
+  const { getScrollY } = useScrollContext();
   const animationFrameRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number>(0);
-
-  // Track scroll position
-  useEffect(() => {
-    const handleScroll = () => {
-      scrollYRef.current = window.scrollY;
-    };
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Spawn a new object
   const spawnObject = useCallback((type: ObjectType) => {
@@ -89,7 +52,7 @@ export function MovingObjects() {
       const startX = fromLeft ? -size : viewportWidth + size;
 
       // Random Y position in document space (within current view + some buffer)
-      const currentScrollY = scrollYRef.current;
+      const currentScrollY = getScrollY();
       const startY = currentScrollY + randomInRange(-viewportHeight * 0.2, viewportHeight * 1.2);
 
       // Velocity - positive X if from left, negative if from right
@@ -113,12 +76,12 @@ export function MovingObjects() {
         velocityY,
         size,
         rotation,
-        variant: type === 'asteroid' ? Math.floor(Math.random() * 3) as 0 | 1 | 2 : undefined,
+        variant: type === 'asteroid' ? (Math.floor(Math.random() * 3) as AsteroidVariant) : undefined,
       };
 
       return [...prev, newObject];
     });
-  }, []);
+  }, [getScrollY]);
 
   // Animation loop
   useEffect(() => {
@@ -128,7 +91,7 @@ export function MovingObjects() {
       setObjects(prev => {
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
-        const scrollY = scrollYRef.current;
+        const scrollY = getScrollY();
 
         return prev.filter(obj => {
           const elapsed = currentTime - obj.spawnTime;
@@ -147,8 +110,7 @@ export function MovingObjects() {
             viewportY < viewportHeight + buffer * 3;
 
           // Also remove if it's been traveling for too long (safety limit)
-          const maxLifetime = 60000; // 60 seconds max
-          const isAlive = elapsed < maxLifetime;
+          const isAlive = elapsed < CONFIG.MAX_LIFETIME_MS;
 
           return isVisible && isAlive;
         });
@@ -163,7 +125,7 @@ export function MovingObjects() {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, []);
+  }, [getScrollY]);
 
   // Spawn timers for each object type
   useEffect(() => {
@@ -187,16 +149,16 @@ export function MovingObjects() {
     scheduleSpawn('satellite');
 
     // Spawn one of each type initially after a short delay
-    setTimeout(() => spawnObject('asteroid'), 1000);
-    setTimeout(() => spawnObject('comet'), 3000);
-    setTimeout(() => spawnObject('satellite'), 5000);
+    setTimeout(() => spawnObject('asteroid'), CONFIG.initialSpawnDelays.asteroid);
+    setTimeout(() => spawnObject('comet'), CONFIG.initialSpawnDelays.comet);
+    setTimeout(() => spawnObject('satellite'), CONFIG.initialSpawnDelays.satellite);
 
     return () => {
       spawnTimers.forEach(timer => clearTimeout(timer));
     };
   }, [spawnObject]);
 
-  const scrollY = scrollYRef.current;
+  const scrollY = getScrollY();
 
   return (
     <div className="fixed inset-0 pointer-events-none" style={{ zIndex: -15 }}>
@@ -231,8 +193,8 @@ export function MovingObjects() {
             }}
           >
             {obj.type === 'comet' && <Comet size={obj.size} />}
-            {obj.type === 'asteroid' && (
-              <Asteroid size={obj.size} variant={obj.variant as 0 | 1 | 2} />
+            {obj.type === 'asteroid' && obj.variant !== undefined && (
+              <Asteroid size={obj.size} variant={obj.variant} />
             )}
             {obj.type === 'satellite' && <Satellite size={obj.size} />}
           </div>

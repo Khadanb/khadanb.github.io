@@ -50,9 +50,10 @@ export function useScrollSpy(): SectionId {
     });
 
     // Handle initial hash on page load
-    const initialHash = window.location.hash.slice(1) as SectionId;
-    if (initialHash && NAV_ITEMS.some((item) => item.id === initialHash)) {
-      const element = document.getElementById(initialHash);
+    const initialHash = window.location.hash.slice(1);
+    const validSection = NAV_ITEMS.find((item) => item.id === initialHash);
+    if (validSection) {
+      const element = document.getElementById(validSection.id);
       if (element) {
         setTimeout(() => {
           element.scrollIntoView({ behavior: 'smooth' });

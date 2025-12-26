@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, forwardRef } from 'react';
+import { useRef, forwardRef } from 'react';
 import type { Experience } from '../../types';
+import { useIntersectionObserver } from '../../hooks';
 
 interface TreeLeafProps {
   experience: Experience;
@@ -8,28 +9,14 @@ interface TreeLeafProps {
 
 export const TreeLeaf = forwardRef<HTMLDivElement, TreeLeafProps>(
   function TreeLeaf({ experience, index }, branchRef) {
-    const [isActive, setIsActive] = useState(false);
     const leafRef = useRef<HTMLDivElement>(null);
     const isEven = index % 2 === 1;
 
-    useEffect(() => {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              setIsActive(true);
-            }
-          });
-        },
-        { threshold: 0.2, rootMargin: '0px 0px -50px 0px' }
-      );
-
-      if (leafRef.current) {
-        observer.observe(leafRef.current);
-      }
-
-      return () => observer.disconnect();
-    }, []);
+    const isActive = useIntersectionObserver(leafRef, {
+      threshold: 0.2,
+      rootMargin: '0px 0px -50px 0px',
+      triggerOnce: true,
+    });
 
     return (
       <div
@@ -52,9 +39,9 @@ export const TreeLeaf = forwardRef<HTMLDivElement, TreeLeafProps>(
           </h3>
           <span className="block text-xs sm:text-sm opacity-60 mb-4 sm:mb-8">{experience.date}</span>
           <ul className="list-none">
-            {experience.highlights.map((highlight, i) => (
+            {experience.highlights.map((highlight) => (
               <li
-                key={i}
+                key={`${experience.company}-${highlight}`}
                 className="mb-2 sm:mb-4 text-sm sm:text-base opacity-80 leading-relaxed pl-5 sm:pl-6 relative before:content-['◈'] before:absolute before:left-0 before:text-primary before:text-xs"
               >
                 {highlight}
@@ -82,6 +69,7 @@ export const TreeLeaf = forwardRef<HTMLDivElement, TreeLeafProps>(
 
         {/* Mobile branch */}
         <div
+          data-mobile-branch
           className={`sm:hidden absolute top-1/2 left-2 h-0.5 bg-primary/30 ${
             isActive ? 'opacity-100' : 'opacity-0'
           }`}
@@ -89,6 +77,7 @@ export const TreeLeaf = forwardRef<HTMLDivElement, TreeLeafProps>(
         >
           {/* Lit portion of mobile branch */}
           <div
+            data-branch-lit-mobile
             className="absolute inset-0 bg-primary shadow-glow origin-left"
             style={{ transform: 'scaleX(0)', willChange: 'transform' }}
           />
@@ -97,3 +86,5 @@ export const TreeLeaf = forwardRef<HTMLDivElement, TreeLeafProps>(
     );
   }
 );
+
+TreeLeaf.displayName = 'TreeLeaf';

@@ -1,71 +1,67 @@
-import { useEffect, useRef, createRef } from 'react';
+import { useRef, createRef, useCallback } from 'react';
 import { TreeLeaf } from '../ui/TreeLeaf';
 import { experiences } from '../../data/experiences';
+import { useThrottledScroll } from '../../hooks';
+import { APP_CONFIG } from '../../config/app';
 
-// Constants
-const OVERSHOOT_DIVISOR = 50;
+const { TREE_OVERSHOOT_DIVISOR } = APP_CONFIG.scroll;
 
 export function ExperienceTree() {
   const stemRef = useRef<HTMLDivElement>(null);
   const stemContainerRef = useRef<HTMLDivElement>(null);
   const branchRefs = useRef(experiences.map(() => createRef<HTMLDivElement>()));
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!stemRef.current || !stemContainerRef.current) return;
+  const handleScroll = useCallback(() => {
+    if (!stemRef.current || !stemContainerRef.current) return;
 
-      const stemContainerRect = stemContainerRef.current.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      const stemTop = stemContainerRect.top;
-      const stemHeight = stemContainerRect.height;
+    const stemContainerRect = stemContainerRef.current.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    const stemTop = stemContainerRect.top;
+    const stemHeight = stemContainerRect.height;
 
-      // Calculate progress based on stem container position
-      let progress = (windowHeight - stemTop) / (stemHeight + windowHeight);
-      progress = Math.max(0, Math.min(1, progress));
+    // Calculate progress based on stem container position
+    let progress = (windowHeight - stemTop) / (stemHeight + windowHeight);
+    progress = Math.max(0, Math.min(1, progress));
 
-      // Update stem height
-      stemRef.current.style.height = `${progress * 100}%`;
+    // Update stem height
+    stemRef.current.style.height = `${progress * 100}%`;
 
-      const litStemBottom = stemTop + stemHeight * progress;
+    const litStemBottom = stemTop + stemHeight * progress;
 
-      // Update each branch based on whether the stem has reached it
-      branchRefs.current.forEach((branchRef) => {
-        const branch = branchRef.current;
-        if (!branch) return;
+    // Update each branch based on whether the stem has reached it
+    branchRefs.current.forEach((branchRef) => {
+      const branch = branchRef.current;
+      if (!branch) return;
 
-        const branchRect = branch.getBoundingClientRect();
-        const branchY = branchRect.top + branchRect.height / 2;
+      const branchRect = branch.getBoundingClientRect();
+      const branchY = branchRect.top + branchRect.height / 2;
 
-        // Find the lit portion div inside the branch
-        const litPortion = branch.querySelector<HTMLDivElement>('div');
-        // Also find mobile branch (sibling)
-        const mobileBranch = branch.parentElement?.querySelector<HTMLDivElement>('.sm\\:hidden > div');
+      // Find the lit portion div inside the branch using data attribute
+      const litPortion = branch.querySelector<HTMLDivElement>('[data-branch-lit]');
+      // Also find mobile branch lit portion (sibling element)
+      const mobileBranch = branch.parentElement?.querySelector<HTMLDivElement>('[data-branch-lit-mobile]');
 
-        if (litPortion) {
-          if (litStemBottom >= branchY) {
-            const overshoot = Math.min((litStemBottom - branchY) / OVERSHOOT_DIVISOR, 1);
-            litPortion.style.transform = `scaleX(${overshoot})`;
-          } else {
-            litPortion.style.transform = 'scaleX(0)';
-          }
+      if (litPortion) {
+        if (litStemBottom >= branchY) {
+          const overshoot = Math.min((litStemBottom - branchY) / TREE_OVERSHOOT_DIVISOR, 1);
+          litPortion.style.transform = `scaleX(${overshoot})`;
+        } else {
+          litPortion.style.transform = 'scaleX(0)';
         }
+      }
 
-        if (mobileBranch) {
-          if (litStemBottom >= branchY) {
-            const overshoot = Math.min((litStemBottom - branchY) / OVERSHOOT_DIVISOR, 1);
-            mobileBranch.style.transform = `scaleX(${overshoot})`;
-          } else {
-            mobileBranch.style.transform = 'scaleX(0)';
-          }
+      if (mobileBranch) {
+        if (litStemBottom >= branchY) {
+          const overshoot = Math.min((litStemBottom - branchY) / TREE_OVERSHOOT_DIVISOR, 1);
+          mobileBranch.style.transform = `scaleX(${overshoot})`;
+        } else {
+          mobileBranch.style.transform = 'scaleX(0)';
         }
-      });
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial call
-
-    return () => window.removeEventListener('scroll', handleScroll);
+      }
+    });
   }, []);
+
+  useThrottledScroll(handleScroll);
 
   return (
     <section
@@ -95,7 +91,7 @@ export function ExperienceTree() {
         {/* Leaves */}
         {experiences.map((exp, index) => (
           <TreeLeaf
-            key={index}
+            key={`${exp.company}-${exp.title}-${exp.date}`}
             ref={branchRefs.current[index]}
             experience={exp}
             index={index}
