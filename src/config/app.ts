@@ -91,8 +91,12 @@ export const APP_CONFIG = {
     rotationSpeedRange: [10, 45] as [number, number],
     /** Parallax speed (between Mars 0.30 and Jupiter 0.40) */
     parallaxSpeed: 0.35,
-    /** Trajectory angle range (degrees from horizontal) */
-    angleRange: [5, 25] as [number, number],
+    /** Trajectory angle range (degrees from horizontal) - kept small to stay in band */
+    angleRange: [2, 8] as [number, number],
+    /** Vertical oscillation amplitude (px) - asteroids wobble within this range */
+    oscillationAmplitude: [15, 40] as [number, number],
+    /** Oscillation period range (ms) - how long for one full wobble cycle */
+    oscillationPeriod: [4000, 10000] as [number, number],
     /** Opacity for belt asteroids */
     maxOpacity: 0.7,
   },

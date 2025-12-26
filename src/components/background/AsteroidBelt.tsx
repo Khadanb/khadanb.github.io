@@ -22,6 +22,10 @@ interface BeltAsteroid {
   variant: AsteroidVariant;
   rotationSpeed: number;    // degrees per second
   initialRotation: number;
+  // Oscillation properties (keeps asteroid within band)
+  oscillationAmplitude: number;  // max vertical displacement (px)
+  oscillationPeriod: number;     // time for one full cycle (ms)
+  oscillationPhase: number;      // starting phase (radians)
   // Collision properties
   isCollider: boolean;
   collisionState: CollisionState;
@@ -105,6 +109,9 @@ function initializeAsteroids(viewportWidth: number): BeltAsteroid[] {
       variant: Math.floor(Math.random() * 6) as AsteroidVariant,
       rotationSpeed: randomInRange(...CONFIG.rotationSpeedRange),
       initialRotation: randomInRange(0, 360),
+      oscillationAmplitude: randomInRange(...CONFIG.oscillationAmplitude),
+      oscillationPeriod: randomInRange(...CONFIG.oscillationPeriod),
+      oscillationPhase: randomInRange(0, Math.PI * 2),
       isCollider,
       collisionState: isCollider ? 'active' : null,
       collisionStartTime: null,
@@ -165,6 +172,9 @@ export function AsteroidBelt() {
       variant: Math.floor(Math.random() * 6) as AsteroidVariant,
       rotationSpeed: randomInRange(...CONFIG.rotationSpeedRange),
       initialRotation: randomInRange(0, 360),
+      oscillationAmplitude: randomInRange(...CONFIG.oscillationAmplitude),
+      oscillationPeriod: randomInRange(...CONFIG.oscillationPeriod),
+      oscillationPhase: randomInRange(0, Math.PI * 2),
       isCollider,
       collisionState: isCollider ? 'active' : null,
       collisionStartTime: null,
@@ -217,7 +227,15 @@ export function AsteroidBelt() {
       } else {
         // Normal position calculation
         currentX = asteroid.startX + asteroid.velocityX * elapsed;
-        const documentY = asteroid.journeyPosition * docHeight + asteroid.velocityY * elapsed;
+
+        // Use sinusoidal oscillation to keep asteroids within the band
+        // Instead of linear drift (velocityY * elapsed), oscillate around the band position
+        const oscillationOffset = asteroid.oscillationAmplitude *
+          Math.sin((elapsed / asteroid.oscillationPeriod) * Math.PI * 2 + asteroid.oscillationPhase);
+
+        // Small linear drift component (much reduced) + oscillation
+        const linearDrift = asteroid.velocityY * elapsed * 0.1; // 10% of original drift
+        const documentY = asteroid.journeyPosition * docHeight + oscillationOffset + linearDrift;
         baseY = documentY - scrollY * CONFIG.parallaxSpeed * parallax.SPACE_ELEMENTS_MULTIPLIER;
       }
 
