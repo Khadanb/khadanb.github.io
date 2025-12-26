@@ -1,10 +1,13 @@
 import { SinglePageLayout } from './components/layout';
 import { ScrollProvider } from './context/ScrollContext';
+import { CollisionProvider } from './context/CollisionContext';
 
 function App() {
   return (
     <ScrollProvider>
-      <SinglePageLayout />
+      <CollisionProvider>
+        <SinglePageLayout />
+      </CollisionProvider>
     </ScrollProvider>
   );
 }

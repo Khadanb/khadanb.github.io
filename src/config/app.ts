@@ -74,6 +74,50 @@ export const APP_CONFIG = {
     /** Tree leaf root margin */
     TREE_LEAF_ROOT_MARGIN: '0px 0px -50px 0px',
   },
+
+  // Asteroid belt configuration (between Mars and Jupiter)
+  asteroidBelt: {
+    /** Journey position range for the belt (2.2-3.2 AU) */
+    journeyRange: [0.14, 0.17] as [number, number],
+    /** Midpoint of the belt (2.7 AU) - density peaks here */
+    journeyMidpoint: 0.155,
+    /** Number of asteroids in the belt */
+    asteroidCount: 40,
+    /** Size range for belt asteroids (px) */
+    sizeRange: [12, 28] as [number, number],
+    /** Horizontal speed range (px per ms) */
+    speedRange: [0.02, 0.06] as [number, number],
+    /** Rotation speed range (degrees per second) */
+    rotationSpeedRange: [10, 45] as [number, number],
+    /** Parallax speed (between Mars 0.30 and Jupiter 0.40) */
+    parallaxSpeed: 0.35,
+    /** Trajectory angle range (degrees from horizontal) */
+    angleRange: [5, 25] as [number, number],
+    /** Opacity for belt asteroids */
+    maxOpacity: 0.7,
+  },
+
+  // Collision detection settings
+  collision: {
+    /** Ratio of asteroids that become colliders (0-1) */
+    colliderRatio: 0.5,
+    /** Z-index for collider asteroids (must be > panel z-index of 10) */
+    colliderZIndex: 15,
+    /** Collision check interval (frames to skip between checks) */
+    checkIntervalFrames: 3,
+    /** Absorption animation duration (ms) */
+    absorptionDuration: 800,
+    /** Ripple animation duration (ms) */
+    rippleDuration: 800,
+    /** Minimum asteroid size for collision (px) - smaller ones pass through */
+    minColliderSize: 18,
+    /** Panel bounds cache invalidation delay after scroll stops (ms) */
+    boundsCacheInvalidationDelay: 150,
+    /** Speed multiplier for collider asteroids (slower = more visible) */
+    colliderSpeedMultiplier: 0.4,
+    /** Size multiplier for collider asteroids (larger = appears closer) */
+    colliderSizeMultiplier: 1.5,
+  },
 } as const;
 
 // Type exports for better TypeScript support

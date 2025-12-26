@@ -1,6 +1,7 @@
-import { useRef, forwardRef } from 'react';
+import { useRef, forwardRef, useEffect } from 'react';
 import type { Experience } from '../../types';
 import { useIntersectionObserver } from '../../hooks';
+import { useCollisionContext } from '../../context/CollisionContext';
 
 interface TreeLeafProps {
   experience: Experience;
@@ -10,6 +11,7 @@ interface TreeLeafProps {
 export const TreeLeaf = forwardRef<HTMLDivElement, TreeLeafProps>(
   function TreeLeaf({ experience, index }, branchRef) {
     const leafRef = useRef<HTMLDivElement>(null);
+    const cardRef = useRef<HTMLDivElement>(null);
     const isEven = index % 2 === 1;
 
     const isActive = useIntersectionObserver(leafRef, {
@@ -17,6 +19,17 @@ export const TreeLeaf = forwardRef<HTMLDivElement, TreeLeafProps>(
       rootMargin: '0px 0px -50px 0px',
       triggerOnce: true,
     });
+
+    // Register panel for collision detection
+    const { registerPanel, unregisterPanel } = useCollisionContext();
+
+    useEffect(() => {
+      if (cardRef.current) {
+        const panelId = `treeleaf-${experience.company}-${index}`;
+        registerPanel(panelId, cardRef.current);
+        return () => unregisterPanel(panelId);
+      }
+    }, [registerPanel, unregisterPanel, experience.company, index]);
 
     return (
       <div
@@ -27,6 +40,7 @@ export const TreeLeaf = forwardRef<HTMLDivElement, TreeLeafProps>(
       >
         {/* Content Card - rendered first, always on top */}
         <div
+          ref={cardRef}
           className={`relative z-10 w-[calc(100%-3.5rem)] ml-14 sm:ml-0 sm:w-[42%] bg-glass-bg backdrop-blur-2xl border border-glass-border p-6 sm:p-12 rounded-2xl sm:rounded-3xl shadow-2xl ${
             isEven ? 'sm:ml-[55%] sm:mr-0' : 'sm:mr-[55%] sm:ml-0'
           }`}
