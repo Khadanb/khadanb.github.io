@@ -9,3 +9,8 @@ export { Saturn } from './Saturn';
 export { Uranus } from './Uranus';
 export { Neptune } from './Neptune';
 export { Telescope } from './Telescope';
+
+// Moving objects
+export { Comet } from './Comet';
+export { Asteroid } from './Asteroid';
+export { Satellite } from './Satellite';
