@@ -41,7 +41,7 @@ const CELESTIAL_BODIES: CelestialBody[] = [
   {
     id: 'sun',
     component: Sun,
-    size: 140,
+    size: 280,
     journeyPosition: 0.06,
     parallaxSpeed: 0.15,
     xPosition: '88%',

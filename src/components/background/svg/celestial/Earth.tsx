@@ -48,6 +48,14 @@ export function Earth({ size = 50, className = '' }: EarthProps) {
 
       {/* Continents - Americas view */}
       <g clipPath="url(#earthClip)">
+        {/* North polar ice cap */}
+        <ellipse cx="50" cy="16" rx="28" ry="8" fill="#f0f8ff" opacity="0.95" />
+        <ellipse cx="50" cy="18" rx="24" ry="5" fill="#ffffff" opacity="0.9" />
+
+        {/* South polar ice cap */}
+        <ellipse cx="50" cy="84" rx="26" ry="7" fill="#f0f8ff" opacity="0.95" />
+        <ellipse cx="50" cy="82" rx="20" ry="4" fill="#ffffff" opacity="0.9" />
+
         {/* Greenland */}
         <ellipse cx="58" cy="22" rx="7" ry="5" fill="url(#landGradient)" opacity="0.85" />
 

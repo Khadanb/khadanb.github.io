@@ -49,26 +49,68 @@ export function Sun({ size = 160, className = '' }: SunProps) {
         </filter>
       </defs>
 
-      {/* Corona rays with varying lengths */}
-      <g opacity="0.35">
-        {Array.from({ length: 16 }).map((_, i) => {
-          const angleDeg = i * 22.5;
-          const angle = (angleDeg * Math.PI) / 180;
-          const length = 42 + (i % 3) * 5;
-          return (
-            <line
-              key={`ray-${angleDeg}`}
-              x1="50"
-              y1="50"
-              x2={50 + length * Math.cos(angle)}
-              y2={50 + length * Math.sin(angle)}
-              stroke="#ffd54f"
-              strokeWidth={1.5 + (i % 2)}
-              strokeLinecap="round"
-              opacity={0.25 + (i % 3) * 0.12}
-            />
-          );
-        })}
+      {/* Corona discharge arcs - plasma loops emanating from surface */}
+      <g opacity="0.5">
+        {/* Large prominence arc - top right */}
+        <path
+          d="M 62 30 Q 75 15, 70 35 Q 68 42, 65 38"
+          fill="none"
+          stroke="#ffcc00"
+          strokeWidth="2"
+          opacity="0.6"
+        />
+        <path
+          d="M 63 31 Q 73 18, 69 36"
+          fill="none"
+          stroke="#fff8c0"
+          strokeWidth="1"
+          opacity="0.4"
+        />
+
+        {/* Medium arc - left side */}
+        <path
+          d="M 28 42 Q 12 38, 18 55 Q 22 62, 30 58"
+          fill="none"
+          stroke="#ffa500"
+          strokeWidth="1.5"
+          opacity="0.5"
+        />
+
+        {/* Small loop - bottom */}
+        <path
+          d="M 45 75 Q 42 88, 55 85 Q 62 82, 58 74"
+          fill="none"
+          stroke="#ffcc00"
+          strokeWidth="1.5"
+          opacity="0.45"
+        />
+
+        {/* Tiny ejection - top left */}
+        <path
+          d="M 35 28 Q 28 18, 32 25"
+          fill="none"
+          stroke="#ffd54f"
+          strokeWidth="1"
+          opacity="0.4"
+        />
+
+        {/* Medium prominence - right */}
+        <path
+          d="M 74 50 Q 88 48, 82 60 Q 78 68, 72 62"
+          fill="none"
+          stroke="#ff9500"
+          strokeWidth="1.5"
+          opacity="0.5"
+        />
+
+        {/* Small arc - bottom left */}
+        <path
+          d="M 32 68 Q 22 78, 35 76"
+          fill="none"
+          stroke="#ffb300"
+          strokeWidth="1"
+          opacity="0.35"
+        />
       </g>
 
       {/* Outer glow */}
