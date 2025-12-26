@@ -98,11 +98,10 @@ export function MovingObjects() {
       const velocityY = (Math.random() > 0.5 ? 1 : -1) * speed * Math.tan(angleRad);
 
       // Rotation to point in direction of travel
-      let rotation = (Math.atan2(velocityY, velocityX) * 180) / Math.PI;
-      // Comet tail should trail behind, so flip 180 if needed
-      if (type === 'comet' && velocityX < 0) {
-        rotation += 180;
-      }
+      // atan2 gives angle of velocity vector; SVG has head pointing right (0°)
+      // So this rotation naturally points the head in direction of travel
+      // and the tail trails behind
+      const rotation = (Math.atan2(velocityY, velocityX) * 180) / Math.PI;
 
       const newObject: MovingObject = {
         id: generateId(),
