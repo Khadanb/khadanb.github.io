@@ -100,7 +100,7 @@ export const APP_CONFIG = {
   // Collision detection settings
   collision: {
     /** Ratio of asteroids that become colliders (0-1) */
-    colliderRatio: 0.5,
+    colliderRatio: 0.1,
     /** Z-index for collider asteroids (must be > panel z-index of 10) */
     colliderZIndex: 15,
     /** Collision check interval (frames to skip between checks) */
