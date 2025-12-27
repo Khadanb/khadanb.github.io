@@ -36,22 +36,22 @@ export const APP_CONFIG = {
   movingObjects: {
     comet: {
       spawnInterval: [8000, 15000] as [number, number],
-      speed: [0.15, 0.25] as [number, number],
-      sizeRange: [50, 90] as [number, number],
+      speed: [0.38, 0.63] as [number, number],
+      sizeRange: [33, 60] as [number, number],
       maxActive: 2,
       angleRange: [20, 70] as [number, number],
     },
     asteroid: {
       spawnInterval: [5000, 10000] as [number, number],
-      speed: [0.08, 0.15] as [number, number],
-      sizeRange: [18, 35] as [number, number],
+      speed: [0.20, 0.38] as [number, number],
+      sizeRange: [12, 23] as [number, number],
       maxActive: 5,
       angleRange: [15, 75] as [number, number],
     },
     satellite: {
       spawnInterval: [15000, 25000] as [number, number],
-      speed: [0.03, 0.06] as [number, number],
-      sizeRange: [30, 50] as [number, number],
+      speed: [0.075, 0.15] as [number, number],
+      sizeRange: [20, 33] as [number, number],
       maxActive: 2,
       angleRange: [0, 20] as [number, number],
     },
@@ -106,7 +106,7 @@ export const APP_CONFIG = {
   // Collision detection settings
   collision: {
     /** Ratio of asteroids that become colliders (0-1) */
-    colliderRatio: 0.1,
+    colliderRatio: 0.25,
     /** Z-index for collider asteroids (must be > panel z-index of 10) */
     colliderZIndex: 15,
     /** Collision check interval (frames to skip between checks) */
@@ -116,7 +116,7 @@ export const APP_CONFIG = {
     /** Ripple animation duration (ms) */
     rippleDuration: 800,
     /** Minimum asteroid size for collision (px) - smaller ones pass through */
-    minColliderSize: 18,
+    minColliderSize: 12,
     /** Panel bounds cache invalidation delay after scroll stops (ms) */
     boundsCacheInvalidationDelay: 150,
     /** Speed multiplier for collider asteroids (slower = more visible) */

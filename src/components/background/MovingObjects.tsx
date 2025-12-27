@@ -80,10 +80,8 @@ export function MovingObjects() {
     // Rotation to point in direction of travel
     const rotation = (Math.atan2(velocityY, velocityX) * 180) / Math.PI;
 
-    // Only asteroids can be colliders
-    const isCollider = type === 'asteroid' &&
-                       size >= COLLISION_CONFIG.minColliderSize &&
-                       Math.random() < COLLISION_CONFIG.colliderRatio;
+    // All free-flying objects are colliders if they meet the minimum size
+    const isCollider = size >= COLLISION_CONFIG.minColliderSize;
 
     // Colliders are larger (appears closer) and move slower (more visible)
     const finalSize = isCollider ? size * COLLISION_CONFIG.colliderSizeMultiplier : size;
