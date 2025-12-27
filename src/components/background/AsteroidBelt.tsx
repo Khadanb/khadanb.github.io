@@ -17,12 +17,11 @@ interface BeltAsteroid {
   startX: number;
   journeyPosition: number;  // Position within the belt (0.14-0.17)
   velocityX: number;
-  velocityY: number;
   size: number;
   variant: AsteroidVariant;
   rotationSpeed: number;    // degrees per second
   initialRotation: number;
-  // Oscillation properties (keeps asteroid within band)
+  // Oscillation properties (keeps asteroid within band with realistic fading)
   oscillationAmplitude: number;  // max vertical displacement (px)
   oscillationPeriod: number;     // time for one full cycle (ms)
   oscillationPhase: number;      // starting phase (radians)
@@ -61,16 +60,20 @@ function generateBeltPosition(): number {
  * Initialize all belt asteroids with random properties.
  * All asteroids move in prograde direction (left-to-right) to simulate
  * the counter-clockwise orbital motion when viewed from above the Sun's North Pole.
+ * Asteroids are evenly distributed across the viewport width with some randomness.
  */
 function initializeAsteroids(viewportWidth: number): BeltAsteroid[] {
   const asteroids: BeltAsteroid[] = [];
   const now = performance.now();
 
+  // Calculate spacing to distribute asteroids evenly across the viewport
+  // Add buffer on each side so asteroids can be slightly off-screen
+  const totalWidth = viewportWidth + 200; // 100px buffer on each side
+  const spacing = totalWidth / CONFIG.asteroidCount;
+
   for (let i = 0; i < CONFIG.asteroidCount; i++) {
     const size = randomInRange(...CONFIG.sizeRange);
     const speed = randomInRange(...CONFIG.speedRange);
-    const angleDeg = randomInRange(...CONFIG.angleRange);
-    const angleRad = (angleDeg * Math.PI) / 180;
 
     // Determine if this asteroid is a collider (can hit panels)
     const isCollider = size >= COLLISION_CONFIG.minColliderSize &&
@@ -82,15 +85,16 @@ function initializeAsteroids(viewportWidth: number): BeltAsteroid[] {
 
     // All asteroids move left-to-right (prograde orbital direction)
     const velocityX = speed * speedMultiplier;
-    // Slight vertical drift (can be up or down)
-    const velocityY = (Math.random() > 0.5 ? 1 : -1) * speed * speedMultiplier * Math.tan(angleRad);
 
-    // Random "age" of asteroid to stagger their phases (for natural movement variation)
+    // Evenly distribute asteroids across the viewport with some randomness
+    // Base position is evenly spaced, with random jitter within half the spacing
+    const baseX = -100 + i * spacing; // Start from left buffer
+    const jitter = randomInRange(-spacing * 0.4, spacing * 0.4);
+    const targetX = baseX + jitter;
+
+    // Random "age" to stagger animation phases (for natural movement variation)
     const age = randomInRange(0, 30000);
     const staggeredSpawnTime = now - age;
-
-    // Where we want the asteroid to appear initially (scattered across screen)
-    const targetX = randomInRange(-finalSize, viewportWidth + finalSize);
 
     // Calculate starting position so asteroid is at targetX NOW
     // Position formula: currentX = startX + velocityX * elapsed
@@ -98,13 +102,15 @@ function initializeAsteroids(viewportWidth: number): BeltAsteroid[] {
     // Therefore: startX = targetX - velocityX * age
     const startX = targetX - velocityX * age;
 
+    // Journey position is the band center for this asteroid (0-1 range)
+    const journeyPosition = generateBeltPosition();
+
     asteroids.push({
       id: generateId(),
       spawnTime: staggeredSpawnTime,
       startX,
-      journeyPosition: generateBeltPosition(),
+      journeyPosition,
       velocityX,
-      velocityY,
       size: finalSize,
       variant: Math.floor(Math.random() * 6) as AsteroidVariant,
       rotationSpeed: randomInRange(...CONFIG.rotationSpeedRange),
@@ -145,8 +151,6 @@ export function AsteroidBelt() {
   const respawnAsteroid = useCallback((asteroid: BeltAsteroid): BeltAsteroid => {
     const size = randomInRange(...CONFIG.sizeRange);
     const speed = randomInRange(...CONFIG.speedRange);
-    const angleDeg = randomInRange(...CONFIG.angleRange);
-    const angleRad = (angleDeg * Math.PI) / 180;
 
     // Determine if this asteroid is a collider (can hit panels)
     const isCollider = size >= COLLISION_CONFIG.minColliderSize &&
@@ -159,15 +163,16 @@ export function AsteroidBelt() {
     // All asteroids spawn from left and move right (prograde orbital direction)
     const startX = -finalSize;
     const velocityX = speed * speedMultiplier;
-    const velocityY = (Math.random() > 0.5 ? 1 : -1) * speed * speedMultiplier * Math.tan(angleRad);
+
+    // New journey position (band center for this asteroid)
+    const journeyPosition = generateBeltPosition();
 
     return {
       ...asteroid,
       spawnTime: performance.now(),
       startX,
-      journeyPosition: generateBeltPosition(),
+      journeyPosition,
       velocityX,
-      velocityY,
       size: finalSize,
       variant: Math.floor(Math.random() * 6) as AsteroidVariant,
       rotationSpeed: randomInRange(...CONFIG.rotationSpeedRange),
@@ -215,6 +220,9 @@ export function AsteroidBelt() {
       let currentX: number;
       let baseY: number;
 
+      // Calculate oscillation progress for this asteroid
+      const oscillationProgress = (elapsed / asteroid.oscillationPeriod) * Math.PI * 2 + asteroid.oscillationPhase;
+
       if (asteroid.collisionState === 'colliding' && asteroid.collisionX !== null && asteroid.collisionY !== null) {
         // During collision, use the saved collision position as base
         const collisionElapsed = now - (asteroid.collisionStartTime || now);
@@ -223,25 +231,31 @@ export function AsteroidBelt() {
         // Gradually slow down from collision position
         const decayMultiplier = 1 - easing.easeOutCubic(progress);
         currentX = asteroid.collisionX + asteroid.velocityX * collisionElapsed * decayMultiplier * 0.3;
-        baseY = asteroid.collisionY + asteroid.velocityY * collisionElapsed * decayMultiplier * 0.3;
+        // For Y, continue oscillation but dampened
+        const oscillationOffset = asteroid.oscillationAmplitude * Math.sin(oscillationProgress) * decayMultiplier;
+        baseY = asteroid.collisionY + oscillationOffset * 0.3;
       } else {
         // Normal position calculation
         currentX = asteroid.startX + asteroid.velocityX * elapsed;
 
-        // Use sinusoidal oscillation to keep asteroids within the band
-        // Instead of linear drift (velocityY * elapsed), oscillate around the band position
-        const oscillationOffset = asteroid.oscillationAmplitude *
-          Math.sin((elapsed / asteroid.oscillationPeriod) * Math.PI * 2 + asteroid.oscillationPhase);
-
-        // Small linear drift component (much reduced) + oscillation
-        const linearDrift = asteroid.velocityY * elapsed * 0.1; // 10% of original drift
-        const documentY = asteroid.journeyPosition * docHeight + oscillationOffset + linearDrift;
+        // Y position: band center + sinusoidal oscillation
+        const oscillationOffset = asteroid.oscillationAmplitude * Math.sin(oscillationProgress);
+        const documentY = asteroid.journeyPosition * docHeight + oscillationOffset;
         baseY = documentY - scrollY * CONFIG.parallaxSpeed * parallax.SPACE_ELEMENTS_MULTIPLIER;
       }
 
       // Calculate opacity based on distance from viewport center
       const distanceFromCenter = Math.abs(baseY - centerY);
       let opacity = Math.max(0, 1 - distanceFromCenter / maxDistance) * CONFIG.maxOpacity;
+
+      // Direction-change fade: fade out when asteroid is near oscillation peaks (where it would reverse direction)
+      // Cosine gives us the velocity direction - near 0 means we're at a peak (direction change)
+      // |cos| = 1 at band center (full velocity), |cos| = 0 at peaks (direction reversal)
+      const oscillationVelocity = Math.cos(oscillationProgress);
+      const velocityMagnitude = Math.abs(oscillationVelocity);
+      // Apply power to extend fade duration at direction changes
+      // Higher fadePower = asteroids stay faded longer at peaks
+      opacity *= Math.pow(velocityMagnitude, CONFIG.fadePower);
 
       // Calculate rotation
       const rotation = asteroid.initialRotation + (elapsed / 1000) * asteroid.rotationSpeed;

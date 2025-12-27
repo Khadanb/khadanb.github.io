@@ -82,7 +82,7 @@ export const APP_CONFIG = {
     /** Midpoint of the belt (2.7 AU) - density peaks here */
     journeyMidpoint: 0.155,
     /** Number of asteroids in the belt */
-    asteroidCount: 40,
+    asteroidCount: 80,
     /** Size range for belt asteroids (px) */
     sizeRange: [12, 28] as [number, number],
     /** Horizontal speed range (px per ms) */
@@ -91,14 +91,16 @@ export const APP_CONFIG = {
     rotationSpeedRange: [10, 45] as [number, number],
     /** Parallax speed (between Mars 0.30 and Jupiter 0.40) */
     parallaxSpeed: 0.35,
-    /** Trajectory angle range (degrees from horizontal) - kept small to stay in band */
-    angleRange: [2, 8] as [number, number],
-    /** Vertical oscillation amplitude (px) - asteroids wobble within this range */
-    oscillationAmplitude: [15, 40] as [number, number],
-    /** Oscillation period range (ms) - how long for one full wobble cycle */
-    oscillationPeriod: [4000, 10000] as [number, number],
+    /** Trajectory angle range (degrees from horizontal) */
+    angleRange: [3, 12] as [number, number],
     /** Opacity for belt asteroids */
     maxOpacity: 0.7,
+    /** Vertical oscillation amplitude (px) - asteroids wobble within this range */
+    oscillationAmplitude: [60, 120] as [number, number],
+    /** Oscillation period range (ms) - how long for one full wobble cycle */
+    oscillationPeriod: [20000, 40000] as [number, number],
+    /** Fade power - higher values keep asteroids faded longer at direction changes */
+    fadePower: 3,
   },
 
   // Collision detection settings
