@@ -2,6 +2,7 @@ import { StarField } from './StarField';
 import { SpaceElements } from './svg/SpaceElements';
 import { MovingObjects } from './MovingObjects';
 import { AsteroidBelt } from './AsteroidBelt';
+import { KuiperBelt } from './KuiperBelt';
 
 export function AtmosphereBackground() {
   return (
@@ -11,6 +12,9 @@ export function AtmosphereBackground() {
 
       {/* Asteroid belt between Mars and Jupiter */}
       <AsteroidBelt />
+
+      {/* Kuiper Belt beyond Neptune */}
+      <KuiperBelt />
 
       {/* Moving celestial objects (comets, asteroids, satellites) */}
       <MovingObjects />

@@ -10,6 +10,7 @@ import {
   Saturn,
   Uranus,
   Neptune,
+  Pluto,
 } from './celestial';
 import { useThrottledScroll } from '../../../hooks/useThrottledScroll';
 import { useWindowDimensions } from '../../../hooks/useResizeListener';
@@ -131,6 +132,15 @@ const CELESTIAL_BODIES: CelestialBody[] = [
     parallaxSpeed: 0.58,
     xPosition: '90%',
     shadow: 'drop-shadow-[0_0_22px_rgba(65,105,225,0.5)]',
+  },
+  {
+    id: 'pluto',
+    component: Pluto,
+    size: 35,
+    journeyPosition: 0.99,
+    parallaxSpeed: 0.58,
+    xPosition: '12%',
+    shadow: 'drop-shadow-[0_0_8px_rgba(168,136,128,0.4)]',
   },
 ];
 

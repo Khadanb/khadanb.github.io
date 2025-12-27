@@ -124,6 +124,32 @@ export const APP_CONFIG = {
     /** Size multiplier for collider asteroids (larger = appears closer) */
     colliderSizeMultiplier: 1.5,
   },
+
+  // Kuiper Belt configuration (beyond Neptune, partial representation)
+  kuiperBelt: {
+    /** Journey position range for the belt (past Pluto at 0.99 to slightly beyond page end) */
+    journeyRange: [0.99, 1.03] as [number, number],
+    /** Midpoint of the belt */
+    journeyMidpoint: 1.01,
+    /** Number of Kuiper Belt objects */
+    objectCount: 35,
+    /** Size range for KBOs (px) - smaller than asteroid belt */
+    sizeRange: [8, 20] as [number, number],
+    /** Horizontal speed range (px per ms) - slower than asteroids */
+    speedRange: [0.015, 0.04] as [number, number],
+    /** Rotation speed range (degrees per second) */
+    rotationSpeedRange: [5, 25] as [number, number],
+    /** Parallax speed (same as Neptune/Pluto at 0.58 for consistent ordering) */
+    parallaxSpeed: 0.58,
+    /** Opacity for KBOs */
+    maxOpacity: 0.6,
+    /** Vertical oscillation amplitude (px) */
+    oscillationAmplitude: [40, 80] as [number, number],
+    /** Oscillation period range (ms) */
+    oscillationPeriod: [25000, 50000] as [number, number],
+    /** Fade power - higher values keep objects faded longer at direction changes */
+    fadePower: 3,
+  },
 } as const;
 
 // Type exports for better TypeScript support
