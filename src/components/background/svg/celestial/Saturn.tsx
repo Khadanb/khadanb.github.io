@@ -48,14 +48,14 @@ export function Saturn({ size = 70, className = '' }: SaturnProps) {
           <stop offset="100%" stopColor="#705030" stopOpacity="0.4" />
         </radialGradient>
 
-        {/* Clip path for back ring */}
+        {/* Clip path for back ring (above planet center) */}
         <clipPath id="backRingClip">
-          <rect x="0" y="0" width="120" height="46" />
+          <rect x="0" y="0" width="120" height="50" />
         </clipPath>
 
-        {/* Clip path for front ring */}
+        {/* Clip path for front ring (below planet center) */}
         <clipPath id="frontRingClip">
-          <rect x="0" y="54" width="120" height="46" />
+          <rect x="0" y="50" width="120" height="50" />
         </clipPath>
 
         {/* Clip path for planet body */}

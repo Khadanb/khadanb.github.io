@@ -112,7 +112,7 @@ export const APP_CONFIG = {
     /** Collision check interval (frames to skip between checks) */
     checkIntervalFrames: 3,
     /** Absorption animation duration (ms) */
-    absorptionDuration: 800,
+    absorptionDuration: 400,
     /** Ripple animation duration (ms) */
     rippleDuration: 800,
     /** Minimum asteroid size for collision (px) - smaller ones pass through */
