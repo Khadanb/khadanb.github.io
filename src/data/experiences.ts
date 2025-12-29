@@ -6,9 +6,9 @@ export const experiences: Experience[] = [
     title: 'Software Engineer - Computer Vision',
     date: 'Aug 2025 – Present',
     highlights: [
-      'AI/ML computer vision for space systems',
-      'Synthetic data generation pipelines',
-      'Forward Deployed Engineering',
+      'Design and deploy AI/ML algorithms for commercial and public space programs.',
+      'Develop custom synthetic data generation pipelines to boost model training in data-scare environments and model out of distribution events.',
+      'Embed directly with customers to rapidly develop cutting edge AI systems.',
     ],
   },
   {
@@ -16,7 +16,6 @@ export const experiences: Experience[] = [
     title: 'M.S. Computer Science',
     date: 'Sep 2025 – Present',
     highlights: [
-      'GPA: 4.0',
       'Computational Perception and Robotics',
     ],
   },
@@ -25,8 +24,7 @@ export const experiences: Experience[] = [
     title: 'R&D Portfolio Manager',
     date: 'Nov 2024 – Aug 2025',
     highlights: [
-      'Funding & technical roadmap alignment',
-      'Modernizing mission-critical legacy systems',
+      'Lead technical proposal writing and presentation to secure funding for forward facing R&D initiatives targeting maintence modernization.',
     ],
   },
   {
@@ -34,9 +32,9 @@ export const experiences: Experience[] = [
     title: 'R&D Computer Engineer',
     date: 'Jul 2024 – Aug 2025',
     highlights: [
-      'Containerized LLM agent (Python/Flask)',
-      'Custom embedded SoCs (SystemVerilog/C++)',
-      'Scalable simulation (C#/Unity3D)',
+      'Developed custom computer vision systems using first-principles and machine learning approches.',
+      'Designed and tested SoC systems made to replace aging maintence tools.',
+      '',
     ],
   },
   {
@@ -50,14 +48,13 @@ export const experiences: Experience[] = [
     title: 'Engineering Intern',
     date: 'Jun 2023 – Aug 2023',
     highlights: [
-      'CV health monitoring algorithms',
-      'Multithreaded video processing',
+      'Built health monitoring system using computer vision first-principles approach.',
     ],
   },
   {
     company: 'Naval Air Warfare Center Aircraft Divison - Lakehurst',
     title: 'Engineering Intern',
     date: 'Jun 2022 – Aug 2022',
-    highlights: ['Automated data labeling tool', '80% manual effort reduction'],
+    highlights: ['Designed data labeling toolset that accelerated the pace of AI development in navy labs.'],
   },
 ];
