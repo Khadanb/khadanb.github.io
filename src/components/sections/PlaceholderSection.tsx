@@ -21,7 +21,7 @@ export function PlaceholderSection({ id, icon: Icon, title, description }: Place
             <Icon className="w-10 h-10 text-primary" />
             <h2 className="text-3xl sm:text-4xl font-bold">{title}</h2>
           </div>
-          <p className="text-slate-400 text-lg">{description}</p>
+          <p className="text-muted text-lg">{description}</p>
         </div>
       </div>
     </section>

@@ -4,12 +4,32 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Honor users who prefer reduced motion: drop smooth scroll and tame the
+   decorative CSS animations/transitions. The JS-driven space parallax is
+   gated separately in its RAF loops. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Custom theme using Tailwind v4 CSS variables */
 @theme {
   --color-primary: #3b82f6;
   --color-secondary: #60a5fa;
   --color-bg: #0f172a;
   --color-text: #f8fafc;
+  /* Muted/secondary foreground — single source for de-emphasized copy.
+     #94a3b8 clears 4.5:1 AA against --color-bg. */
+  --color-muted: #94a3b8;
   --color-glass-bg: rgba(255, 255, 255, 0.03);
   --color-glass-border: rgba(255, 255, 255, 0.1);
 

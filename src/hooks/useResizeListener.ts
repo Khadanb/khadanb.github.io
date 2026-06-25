@@ -1,4 +1,4 @@
-import { useRef, useReducer, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { useWindowEvent } from './useWindowEvent';
 
 /**
@@ -6,25 +6,23 @@ import { useWindowEvent } from './useWindowEvent';
  * Returns current window dimensions and handles cleanup.
  */
 export function useWindowDimensions() {
-  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
-  const dimensionsRef = useRef({
+  const [dimensions, setDimensions] = useState(() => ({
     width: typeof window !== 'undefined' ? window.innerWidth : 0,
     height: typeof window !== 'undefined' ? window.innerHeight : 0,
     docHeight: typeof document !== 'undefined' ? document.documentElement.scrollHeight : 0,
-  });
+  }));
 
   const updateDimensions = useCallback(() => {
-    dimensionsRef.current = {
+    setDimensions({
       width: window.innerWidth,
       height: window.innerHeight,
       docHeight: document.documentElement.scrollHeight,
-    };
-    forceUpdate();
+    });
   }, []);
 
   useWindowEvent('resize', updateDimensions, { debounceMs: 100 });
 
-  return dimensionsRef.current;
+  return dimensions;
 }
 
 /**
@@ -32,7 +30,10 @@ export function useWindowDimensions() {
  */
 export function useResizeListener(callback: () => void) {
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
+  // Keep the latest callback in a ref without writing it during render.
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
 
   const handleResize = useCallback(() => {
     callbackRef.current();

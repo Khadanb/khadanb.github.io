@@ -60,7 +60,10 @@ export function useIntersectionCallback<T extends HTMLElement>(
 ): void {
   const { threshold = 0.1, rootMargin = '0px' } = options;
   const callbackRef = useRef(onIntersect);
-  callbackRef.current = onIntersect;
+  // Keep the latest callback in a ref without writing it during render.
+  useEffect(() => {
+    callbackRef.current = onIntersect;
+  });
 
   useEffect(() => {
     const element = ref.current;

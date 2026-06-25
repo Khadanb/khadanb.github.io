@@ -11,12 +11,12 @@ export function Hero() {
       <div className="container max-w-2xl mx-auto">
         <div
           ref={cardRef}
-          className="bg-glass-bg backdrop-blur-xl border border-glass-border p-8 sm:p-12 rounded-3xl shadow-2xl"
+          className="glass-card p-8 sm:p-12"
         >
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 bg-gradient-to-r from-white to-muted bg-clip-text text-transparent">
             Brandon Khadan
           </h1>
-          <p className="text-lg sm:text-xl text-slate-400">
+          <p className="text-lg sm:text-xl text-muted">
             Explore our solar system with my interactive CV!
           </p>
         </div>

@@ -28,8 +28,8 @@ export function ScrollIndicator({ targetId }: ScrollIndicatorProps) {
         href={`#${targetId}`}
         className="flex flex-col items-center cursor-pointer animate-bounce"
       >
-        <ChevronDown className="w-8 h-8 text-white opacity-70" />
-        <ChevronDown className="w-8 h-8 text-white opacity-40 -mt-6" />
+        <ChevronDown className="w-8 h-8 text-text opacity-70" />
+        <ChevronDown className="w-8 h-8 text-text opacity-40 -mt-6" />
       </a>
     </div>
   );

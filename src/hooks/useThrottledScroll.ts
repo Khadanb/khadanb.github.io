@@ -1,4 +1,4 @@
-import { useRef, useReducer, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { useWindowEvent } from './useWindowEvent';
 
 /**
@@ -7,7 +7,10 @@ import { useWindowEvent } from './useWindowEvent';
  */
 export function useThrottledScroll(callback: (scrollY: number) => void) {
   const callbackRef = useRef(callback);
-  callbackRef.current = callback;
+  // Keep the latest callback in a ref without reading/writing it during render.
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
 
   const handleScroll = useCallback(() => {
     callbackRef.current(window.scrollY);
@@ -21,18 +24,16 @@ export function useThrottledScroll(callback: (scrollY: number) => void) {
  * Use this when you need scrollY as state.
  */
 export function useScrollY(): number {
-  const scrollYRef = useRef(typeof window !== 'undefined' ? window.scrollY : 0);
-  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
+  const [scrollY, setScrollY] = useState(
+    typeof window !== 'undefined' ? window.scrollY : 0
+  );
 
   const handleScroll = useCallback(() => {
-    const newScrollY = window.scrollY;
-    if (scrollYRef.current !== newScrollY) {
-      scrollYRef.current = newScrollY;
-      forceUpdate();
-    }
+    // React bails out when the value is unchanged, so no manual guard needed.
+    setScrollY(window.scrollY);
   }, []);
 
   useWindowEvent('scroll', handleScroll, { throttleRAF: true });
 
-  return scrollYRef.current;
+  return scrollY;
 }

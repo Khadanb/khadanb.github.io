@@ -33,8 +33,8 @@ Scroll- and animation-driven visuals **do not use React state for per-frame upda
 
 ### Context providers (wrap the app in `App.tsx`)
 
-- **`ScrollProvider`** (`context/ScrollContext.tsx`): one global scroll listener for the whole app. Consumers call `getScrollY()` (synchronous, no re-render) or `subscribe(cb)`. Use `useScrollRef()` for a live ref. Don't add standalone `window.addEventListener('scroll', …)` — subscribe here instead.
-- **`CollisionProvider`** (`context/CollisionContext.tsx`): a registry of "panels" (the glass cards) plus a cached bounds map and ripple-effect spawner. The cache is invalidated on resize and ~150ms after scrolling stops.
+- **`ScrollProvider`** (`context/ScrollContext.tsx`): one global scroll listener for the whole app. Consumers call `getScrollY()` (synchronous, no re-render) or `subscribe(cb)`. The context object and its consumer hooks (`useScrollContext`, `useScrollRef`) live in `context/scroll-store.ts` — import them from there, not the `.tsx` (the provider file exports only the component, to satisfy React Fast Refresh). Don't add standalone `window.addEventListener('scroll', …)` — subscribe here instead.
+- **`CollisionProvider`** (`context/CollisionContext.tsx`): a registry of "panels" (the glass cards) plus a cached bounds map and ripple-effect spawner. The cache is invalidated on resize and ~150ms after scrolling stops. Its context object and `useCollisionContext` hook live in `context/collision-store.ts` (same provider-vs-store split as scroll).
 
 ### Collision system
 
@@ -50,7 +50,7 @@ Glass-card panels register themselves with `usePanelRegistration(id, ref)` (used
 
 ## Conventions & gotchas
 
-- **Tailwind v4, CSS-first config.** There is no `tailwind.config.js`. Theme tokens are declared with `@theme` in `src/index.css`, which is what makes utilities like `text-text`, `bg-bg`, `bg-glass-bg`, `border-glass-border`, `shadow-glow`, and `bg-primary/secondary` work. Reusable component classes (`.glass-card`, `.glass-nav`) and the collision animations (`.collision-ripple`, `.asteroid-absorbing`) live in `@layer components` there too.
+- **Tailwind v4, CSS-first config.** There is no `tailwind.config.js`. Theme tokens are declared with `@theme` in `src/index.css`, which is what makes utilities like `text-text`, `text-muted` (de-emphasized copy), `bg-bg`, `bg-glass-bg`, `border-glass-border`, `shadow-glow`, and `bg-primary/secondary` work. Use the `text-muted` token for secondary text rather than hardcoding `text-slate-400`. Reusable component classes (`.glass-card`, `.glass-nav`) and the collision animations (`.collision-ripple`, `.asteroid-absorbing`) live in `@layer components` there too. A `prefers-reduced-motion` block at the top of the file tames CSS animations/transitions and smooth scroll (the JS parallax is not yet gated by it).
 - **`verbatimModuleSyntax` is on.** Type-only imports must use `import type { … }` or the build fails. `noUnusedLocals`/`noUnusedParameters` are also enforced, so dead bindings break `pnpm build`.
 - **Duplicated-but-extracted animation logic.** `hooks/useAnimatedObjects.ts` (`useAnimationLoop`/`useCleanupInterval`/`useSpawnTimers`) and `utils/parallax.ts` provide shared loop/parallax helpers, but the actual background components currently **re-implement their RAF loops, spawn timers, and parallax math inline** and don't import them. So: to change a component's runtime behavior, edit that component's inline code — not the shared helper. If you refactor, consolidating onto the shared helpers is the intended direction.
 
@@ -63,3 +63,7 @@ Glass-card panels register themselves with `usePanelRegistration(id, ref)` (used
 ## Git
 
 Keep commit messages ≤70 characters and do not add Claude/Anthropic co-author trailers.
+
+## On task completion
+
+- Always update CLAUDE.md and READMD.md after completing a task to add important info and remove stale entries.
