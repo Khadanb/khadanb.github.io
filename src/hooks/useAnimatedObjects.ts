@@ -19,7 +19,7 @@ export interface AnimationLoopOptions {
  *
  * @returns An object with:
  *   - forceRender: Function to trigger a re-render
- *   - isRunning: Whether the animation loop is active
+ *   - isRunning: Getter returning whether the animation loop is active
  *   - start: Function to start the animation
  *   - stop: Function to stop the animation
  *
@@ -82,7 +82,9 @@ export function useAnimationLoop(
 
   return {
     forceRender,
-    isRunning: isRunningRef.current,
+    // Exposed as a getter so callers read the live value without the hook
+    // accessing a ref during render.
+    isRunning: () => isRunningRef.current,
     start,
     stop,
   };

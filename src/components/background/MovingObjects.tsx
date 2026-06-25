@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback, useReducer } from 'react';
 import { Comet, Asteroid, Satellite } from './svg/celestial';
-import { useScrollContext } from '../../context/ScrollContext';
+import { useScrollContext } from '../../context/scroll-store';
 import { useCollisionDetection } from '../../hooks';
 import { APP_CONFIG } from '../../config/app';
 import { randomInRange, generateId, easing } from '../../utils/animation';

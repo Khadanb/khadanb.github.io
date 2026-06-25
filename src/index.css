@@ -1,7 +1,44 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 html {
   scroll-behavior: smooth;
+  /* Keep iOS from inflating text on orientation change. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Dark base so post pages (and any gap above the starfield canvas) stay on-brand. */
+body {
+  background-color: var(--color-bg);
+  /* Stop the page from rubber-banding past the fixed space background on mobile. */
+  overscroll-behavior-y: none;
+}
+
+/* Snappier taps (drop the 300ms delay) and no grey flash on mobile. */
+a,
+button,
+summary,
+[role='button'] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Honor users who prefer reduced motion: drop smooth scroll and tame the
+   decorative CSS animations/transitions. The JS-driven space parallax is
+   gated separately in its RAF loops. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Custom theme using Tailwind v4 CSS variables */
@@ -10,6 +47,9 @@ html {
   --color-secondary: #60a5fa;
   --color-bg: #0f172a;
   --color-text: #f8fafc;
+  /* Muted/secondary foreground — single source for de-emphasized copy.
+     #94a3b8 clears 4.5:1 AA against --color-bg. */
+  --color-muted: #94a3b8;
   --color-glass-bg: rgba(255, 255, 255, 0.03);
   --color-glass-border: rgba(255, 255, 255, 0.1);
 
@@ -103,5 +143,11 @@ html {
     pointer-events: none;
     z-index: 100;
     animation: panel-ripple 800ms ease-out forwards;
+  }
+
+  /* Tune the typography plugin's dark ("invert") palette to the brand accent. */
+  .prose {
+    --tw-prose-invert-links: var(--color-primary);
+    --tw-prose-invert-quote-borders: var(--color-primary);
   }
 }

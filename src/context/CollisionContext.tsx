@@ -1,7 +1,8 @@
-import { createContext, useContext, useRef, useCallback, useEffect, useMemo, type ReactNode } from 'react';
+import { useRef, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import { useResizeListener } from '../hooks/useResizeListener';
 import type { Bounds, Point } from '../utils/collision';
 import { APP_CONFIG } from '../config/app';
+import { CollisionContext, type CollisionContextValue } from './collision-store';
 
 const { collision: CONFIG } = APP_CONFIG;
 
@@ -15,21 +16,6 @@ interface PanelEntry {
   element: HTMLElement;
   bounds: Bounds;
 }
-
-interface CollisionContextValue {
-  /** Register a panel element for collision detection */
-  registerPanel: (id: string, element: HTMLElement) => void;
-  /** Unregister a panel element */
-  unregisterPanel: (id: string) => void;
-  /** Get cached bounds for all panels (updates cache if invalidated) */
-  getPanelBounds: () => Map<string, Bounds>;
-  /** Trigger a ripple effect at the specified point on a panel */
-  triggerRipple: (panelId: string, localPoint: Point) => void;
-  /** Mark the bounds cache as needing update */
-  invalidateBoundsCache: () => void;
-}
-
-const CollisionContext = createContext<CollisionContextValue | null>(null);
 
 interface CollisionProviderProps {
   children: ReactNode;
@@ -133,12 +119,14 @@ export function CollisionProvider({ children }: CollisionProviderProps) {
 
   // Cleanup active ripples on unmount
   useEffect(() => {
+    // Capture the Set once; it is never reassigned, only mutated.
+    const activeRipples = activeRipplesRef.current;
     return () => {
-      activeRipplesRef.current.forEach(({ timeoutId, element }) => {
+      activeRipples.forEach(({ timeoutId, element }) => {
         clearTimeout(timeoutId);
         element.remove();
       });
-      activeRipplesRef.current.clear();
+      activeRipples.clear();
     };
   }, []);
 
@@ -156,16 +144,4 @@ export function CollisionProvider({ children }: CollisionProviderProps) {
       {children}
     </CollisionContext.Provider>
   );
-}
-
-/**
- * Hook to access collision context.
- * Returns methods to register panels, get bounds, and trigger ripples.
- */
-export function useCollisionContext(): CollisionContextValue {
-  const context = useContext(CollisionContext);
-  if (!context) {
-    throw new Error('useCollisionContext must be used within CollisionProvider');
-  }
-  return context;
 }

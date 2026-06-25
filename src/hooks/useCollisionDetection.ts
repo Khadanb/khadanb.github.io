@@ -1,5 +1,5 @@
 import { useRef, useCallback } from 'react';
-import { useCollisionContext } from '../context/CollisionContext';
+import { useCollisionContext } from '../context/collision-store';
 import {
   isCircleIntersectingRect,
   getCollisionPoint,

@@ -15,8 +15,8 @@ interface NavLinkProps {
 export function NavLink({ link, activeSection, variant, onClick }: NavLinkProps) {
   const isActive = activeSection === link.id;
 
-  const baseStyles = 'font-medium transition-colors duration-300 hover:text-white';
-  const activeColor = isActive ? 'text-white' : 'text-slate-400';
+  const baseStyles = 'font-medium transition-colors duration-300 hover:text-text';
+  const activeColor = isActive ? 'text-text' : 'text-muted';
 
   const variantStyles = variant === 'desktop'
     ? baseStyles

@@ -1,0 +1,47 @@
+---
+title: An Interactive Solar System Portfolio
+date: 2026-06-15
+summary: How I turned a personal website into a scroll-driven journey through the solar system, built with React 19, Vite, and a direct-DOM animation pattern.
+tags:
+  - React
+  - TypeScript
+  - Animation
+---
+
+The background of this site isn't a picture — it's a coordinate system. Every
+celestial body is laid out along the page's scroll height, so scrolling down is
+literally a trip outward from the Sun toward the Kuiper Belt.
+
+## The journey model
+
+Each body has a `journeyPosition` in the range `[0, 1]`. Its document Y position
+is simply:
+
+```ts
+const documentY = journeyPosition * docHeight;
+```
+
+A per-body `parallaxSpeed` then offsets it against the scroll position, so
+farther planets drift into view later. Repositioning anything in space is a
+matter of editing two numbers — never pixel values.
+
+## Why not React state?
+
+Per-frame scroll updates never touch React state. Instead the components keep
+their data in refs and mutate `element.style.transform` directly inside a
+`requestAnimationFrame` loop. React only re-renders when DOM *nodes* are added
+or removed (spawning a comet, for example).
+
+> The result: smooth 60fps parallax even with dozens of moving objects on screen.
+
+## Embedding media
+
+Because these posts are authored in **MDX**, I can drop real components straight
+into the prose. A demo clip is just an HTML5 video element:
+
+```mdx
+<video src="/media/orbit-demo.mp4" controls width="100%" />
+```
+
+That's the whole trick. The next post digs into the collision system that lets
+asteroids ricochet off the glass content panels.

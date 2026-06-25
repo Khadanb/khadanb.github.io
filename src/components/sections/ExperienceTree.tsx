@@ -1,4 +1,4 @@
-import { useRef, createRef, useCallback, useEffect } from 'react';
+import { useRef, createRef, useCallback, useEffect, useMemo } from 'react';
 import { TreeLeaf } from '../ui/TreeLeaf';
 import { experiences } from '../../data/experiences';
 import { useThrottledScroll, useResizeEvent } from '../../hooks';
@@ -21,7 +21,9 @@ interface CachedDimensions {
 export function ExperienceTree() {
   const stemRef = useRef<HTMLDivElement>(null);
   const stemContainerRef = useRef<HTMLDivElement>(null);
-  const branchRefs = useRef(experiences.map(() => createRef<HTMLDivElement>()));
+  // Stable per-experience refs. experiences is a static module-level array, so
+  // this array is created once and never needs to read a ref during render.
+  const branchRefs = useMemo(() => experiences.map(() => createRef<HTMLDivElement>()), []);
 
   // Cache element dimensions to avoid expensive getBoundingClientRect calls
   const cachedDimensionsRef = useRef<CachedDimensions | null>(null);
@@ -37,7 +39,7 @@ export function ExperienceTree() {
       // Convert viewport-relative to document-relative
       stemOffsetTop: stemRect.top + scrollY,
       stemHeight: stemRect.height,
-      branchData: branchRefs.current.map(branchRef => {
+      branchData: branchRefs.map(branchRef => {
         const branch = branchRef.current;
         if (!branch) {
           return { offsetTop: 0, height: 0, litPortion: null, mobileBranch: null };
@@ -51,7 +53,7 @@ export function ExperienceTree() {
         };
       }),
     };
-  }, []);
+  }, [branchRefs]);
 
   // Initialize dimensions on mount
   useEffect(() => {
@@ -137,7 +139,7 @@ export function ExperienceTree() {
         {experiences.map((exp, index) => (
           <TreeLeaf
             key={`${exp.company}-${exp.title}-${exp.date}`}
-            ref={branchRefs.current[index]}
+            ref={branchRefs[index]}
             experience={exp}
             index={index}
           />

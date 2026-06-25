@@ -12,6 +12,8 @@ A modern, interactive personal portfolio website featuring animated space-themed
 | Language | TypeScript 5.9 |
 | Build Tool | Vite 7 |
 | Styling | Tailwind CSS 4 |
+| Routing | React Router 7 |
+| Content | MDX (markdown + JSX) |
 | Icons | Lucide React |
 | Linting | ESLint 9 |
 | Package Manager | pnpm |
@@ -22,8 +24,9 @@ A modern, interactive personal portfolio website featuring animated space-themed
 - **Asteroid Belt** - 40+ procedurally generated asteroids with collision detection
 - **Glass Morphism Design** - Modern backdrop blur effects with gradient accents
 - **Scroll-Driven Animations** - Experience tree that animates on scroll
-- **Responsive Design** - Mobile-first approach with adaptive layouts
+- **Responsive Design** - Mobile-first layouts with `dvh` viewport sizing, 44px touch targets, and a `useIsMobile` hook that thins the star/asteroid/Kuiper counts and scales planets down on phones for smooth performance
 - **Moving Celestial Objects** - Comets, satellites, and asteroids crossing the viewport
+- **Project Blog** - Projects link to individual posts authored in MDX, rendered on clean reading pages
 
 ## Project Structure
 
@@ -31,9 +34,12 @@ A modern, interactive personal portfolio website featuring animated space-themed
 src/
 ├── components/
 │   ├── background/    # Starfield, asteroids, planets
-│   ├── layout/        # Navbar, footer, page layout
+│   ├── layout/        # Navbar, footer, page + post layouts
 │   ├── sections/      # Hero, Experience, Projects, etc.
-│   └── ui/            # Reusable UI components
+│   ├── mdx/           # MDX element overrides (links, images)
+│   └── ui/            # Reusable UI components (incl. ProjectCard)
+├── pages/             # Routed pages (HomePage, ProjectPostPage)
+├── content/projects/  # Project posts (*.mdx) + registry
 ├── hooks/             # Custom React hooks
 ├── context/           # React Context providers
 ├── config/            # App configuration constants
@@ -41,6 +47,38 @@ src/
 ├── data/              # Static data (experiences)
 └── types/             # TypeScript definitions
 ```
+
+## Routing
+
+`react-router-dom` powers two routes:
+
+- `/` — the full scroll-driven solar-system home page
+- `/projects/:slug` — an individual project post on a clean reading layout
+
+Because GitHub Pages is a static host, deep links/refreshes are handled by a
+SPA fallback: `public/404.html` encodes the requested path and redirects to the
+app root, where a snippet in `index.html` restores the real URL.
+
+## Writing a project post
+
+1. Add a file `src/content/projects/<slug>.mdx`. The filename becomes the URL slug
+   (`/projects/<slug>`).
+2. Start it with YAML frontmatter:
+
+   ```mdx
+   ---
+   title: My Project
+   date: 2026-06-01
+   summary: One-line description shown on the Projects card.
+   tags: [React, TypeScript]
+   ---
+
+   Write standard markdown here. Because this is MDX you can also embed React
+   components and HTML — e.g. `<video src="/media/demo.mp4" controls />`.
+   ```
+
+3. That's it — the card appears on the Projects section (newest first) and the post
+   page renders automatically. Set `draft: true` in frontmatter to hide a post.
 
 ## Getting Started
 

@@ -14,6 +14,7 @@ import {
 } from './celestial';
 import { useThrottledScroll } from '../../../hooks/useThrottledScroll';
 import { useWindowDimensions } from '../../../hooks/useResizeListener';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 import { APP_CONFIG } from '../../../config/app';
 
 const {
@@ -196,6 +197,7 @@ const CELESTIAL_BODIES: CelestialBody[] = [
 
 export function SpaceElements() {
   const { height: viewportHeight, docHeight } = useWindowDimensions();
+  const isMobile = useIsMobile();
 
   // Refs to each planet's DOM element for direct manipulation
   const elementRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -206,14 +208,16 @@ export function SpaceElements() {
   // Refs to belt label elements
   const beltLabelRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
-  // Memoize position calculations that depend on docHeight
-  const celestialPositions = useMemo(() =>
-    CELESTIAL_BODIES.map(body => ({
+  // Memoize position calculations that depend on docHeight.
+  // On mobile the planets are scaled down so they don't crowd narrow screens.
+  const celestialPositions = useMemo(() => {
+    const scale = isMobile ? APP_CONFIG.background.planetScaleMobile : 1;
+    return CELESTIAL_BODIES.map(body => ({
       ...body,
+      size: Math.round(body.size * scale),
       documentY: body.journeyPosition * docHeight,
-    })),
-    [docHeight]
-  );
+    }));
+  }, [docHeight, isMobile]);
 
   // Memoize belt label positions
   const beltPositions = useMemo(() =>

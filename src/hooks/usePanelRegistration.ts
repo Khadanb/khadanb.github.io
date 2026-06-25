@@ -1,5 +1,5 @@
 import { useEffect, type RefObject } from 'react';
-import { useCollisionContext } from '../context/CollisionContext';
+import { useCollisionContext } from '../context/collision-store';
 
 /**
  * Hook to register an element as a collision panel.
