@@ -4,7 +4,7 @@ import { ProjectCard } from '../ui/ProjectCard';
 
 export function ProjectsSection() {
   return (
-    <section id="projects" className="min-h-screen py-16 sm:py-32 flex items-center">
+    <section id="projects" className="min-h-dvh py-16 sm:py-32 flex items-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 w-full">
         <div className="flex items-center gap-4 mb-10">
           <FolderGit2 className="w-10 h-10 text-primary" />

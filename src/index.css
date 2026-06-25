@@ -3,11 +3,25 @@
 
 html {
   scroll-behavior: smooth;
+  /* Keep iOS from inflating text on orientation change. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* Dark base so post pages (and any gap above the starfield canvas) stay on-brand. */
 body {
   background-color: var(--color-bg);
+  /* Stop the page from rubber-banding past the fixed space background on mobile. */
+  overscroll-behavior-y: none;
+}
+
+/* Snappier taps (drop the 300ms delay) and no grey flash on mobile. */
+a,
+button,
+summary,
+[role='button'] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Honor users who prefer reduced motion: drop smooth scroll and tame the

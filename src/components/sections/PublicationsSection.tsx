@@ -4,7 +4,7 @@ import { PublicationCard } from '../ui/PublicationCard';
 
 export function PublicationsSection() {
   return (
-    <section id="publications" className="min-h-screen py-16 sm:py-32 flex items-center">
+    <section id="publications" className="min-h-dvh py-16 sm:py-32 flex items-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 w-full">
         <div className="flex items-center gap-4 mb-10">
           <BookOpen className="w-10 h-10 text-primary" />

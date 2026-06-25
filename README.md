@@ -24,7 +24,7 @@ A modern, interactive personal portfolio website featuring animated space-themed
 - **Asteroid Belt** - 40+ procedurally generated asteroids with collision detection
 - **Glass Morphism Design** - Modern backdrop blur effects with gradient accents
 - **Scroll-Driven Animations** - Experience tree that animates on scroll
-- **Responsive Design** - Mobile-first approach with adaptive layouts
+- **Responsive Design** - Mobile-first layouts with `dvh` viewport sizing, 44px touch targets, and a `useIsMobile` hook that thins the star/asteroid/Kuiper counts and scales planets down on phones for smooth performance
 - **Moving Celestial Objects** - Comets, satellites, and asteroids crossing the viewport
 - **Project Blog** - Projects link to individual posts authored in MDX, rendered on clean reading pages
 

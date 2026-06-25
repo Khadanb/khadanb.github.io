@@ -7,7 +7,7 @@ export function Hero() {
   usePanelRegistration('hero-card', cardRef);
 
   return (
-    <section id="home" className="h-screen flex items-center justify-center text-center relative px-4">
+    <section id="home" className="min-h-dvh flex items-center justify-center text-center relative px-4 py-24">
       <div className="container max-w-2xl mx-auto">
         <div
           ref={cardRef}

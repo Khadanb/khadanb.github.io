@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { StarField } from '../background/StarField';
+import { useIsMobile } from '../../hooks';
 import { formatDate } from '../../utils/date';
 import type { ProjectMeta } from '../../content/projects';
 
@@ -16,10 +17,11 @@ interface PostLayoutProps {
  * article column optimized for long-form reading.
  */
 export function PostLayout({ meta, children }: PostLayoutProps) {
+  const isMobile = useIsMobile();
   return (
     <div className="min-h-dvh text-text font-sans">
       {/* Low-density static starfield — keeps the brand without distraction. */}
-      <StarField starCount={120} />
+      <StarField starCount={isMobile ? 70 : 120} />
 
       <header className="fixed top-0 w-full z-50 py-4 glass-nav">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 flex items-center justify-between">

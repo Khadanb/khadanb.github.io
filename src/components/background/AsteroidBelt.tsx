@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { Asteroid } from './svg/celestial';
-import { useThrottledScroll, useCollisionDetection } from '../../hooks';
+import { useThrottledScroll, useCollisionDetection, useIsMobile } from '../../hooks';
 import { useWindowDimensions } from '../../hooks/useResizeListener';
 import { APP_CONFIG } from '../../config/app';
 import { randomInRange, generateId, clamp, easing } from '../../utils/animation';
@@ -62,16 +62,16 @@ function generateBeltPosition(): number {
  * the counter-clockwise orbital motion when viewed from above the Sun's North Pole.
  * Asteroids are evenly distributed across the viewport width with some randomness.
  */
-function initializeAsteroids(viewportWidth: number): BeltAsteroid[] {
+function initializeAsteroids(viewportWidth: number, asteroidCount: number): BeltAsteroid[] {
   const asteroids: BeltAsteroid[] = [];
   const now = performance.now();
 
   // Calculate spacing to distribute asteroids evenly across the viewport
   // Add buffer on each side so asteroids can be slightly off-screen
   const totalWidth = viewportWidth + 200; // 100px buffer on each side
-  const spacing = totalWidth / CONFIG.asteroidCount;
+  const spacing = totalWidth / asteroidCount;
 
-  for (let i = 0; i < CONFIG.asteroidCount; i++) {
+  for (let i = 0; i < asteroidCount; i++) {
     const size = randomInRange(...CONFIG.sizeRange);
     const speed = randomInRange(...CONFIG.speedRange);
 
@@ -131,6 +131,7 @@ function initializeAsteroids(viewportWidth: number): BeltAsteroid[] {
 
 export function AsteroidBelt() {
   const { height: viewportHeight, width: viewportWidth, docHeight } = useWindowDimensions();
+  const isMobile = useIsMobile();
   const asteroidsRef = useRef<BeltAsteroid[]>([]);
   const elementRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const animationRef = useRef<number | null>(null);
@@ -142,10 +143,11 @@ export function AsteroidBelt() {
   // Initialize asteroids on mount
   useEffect(() => {
     if (!isInitializedRef.current && viewportWidth > 0) {
-      asteroidsRef.current = initializeAsteroids(viewportWidth);
+      const count = isMobile ? CONFIG.asteroidCountMobile : CONFIG.asteroidCount;
+      asteroidsRef.current = initializeAsteroids(viewportWidth, count);
       isInitializedRef.current = true;
     }
-  }, [viewportWidth]);
+  }, [viewportWidth, isMobile]);
 
   // Respawn asteroid when it goes off screen or after absorption
   const respawnAsteroid = useCallback((asteroid: BeltAsteroid): BeltAsteroid => {

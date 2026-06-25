@@ -54,7 +54,11 @@ Glass-card panels register themselves with `usePanelRegistration(id, ref)` (used
 
 ### Hooks layer (`src/hooks`, re-exported from `hooks/index.ts`)
 
-`useWindowEvent` is the foundation — it handles RAF-throttling (scroll) and debouncing (resize) and is what every other event hook is built on. Notable: `useThrottledScroll`, `useWindowDimensions` (returns `width`/`height`/`docHeight`), `useScrollSpy` (IntersectionObserver-driven active-nav + URL-hash sync), `useIntersectionObserver`, and the collision hooks above.
+`useWindowEvent` is the foundation — it handles RAF-throttling (scroll) and debouncing (resize) and is what every other event hook is built on. Notable: `useThrottledScroll`, `useWindowDimensions` (returns `width`/`height`/`docHeight`), `useScrollSpy` (IntersectionObserver-driven active-nav + URL-hash sync), `useIntersectionObserver`, `useIsMobile` (matchMedia against `APP_CONFIG.breakpoints.MOBILE_MAX`), and the collision hooks above.
+
+### Mobile performance scaling
+
+The decorative space scene is the heaviest part of the page, so it is thinned on phones via `useIsMobile`: `AtmosphereBackground` and `PostLayout` drop the `StarField` count, `AsteroidBelt`/`KuiperBelt` initialize fewer objects, and `SpaceElements` multiplies every planet `size` by `APP_CONFIG.background.planetScaleMobile`. All the mobile counts/scales live in `APP_CONFIG.background` and the per-belt `*Mobile` keys — tune them there, not inline. Full-height sections use `min-h-dvh` (not `min-h-screen`/`h-screen`) so mobile browser chrome doesn't clip them, and `index.css` sets `touch-action: manipulation` + tap-highlight resets globally.
 
 ## Conventions & gotchas
 

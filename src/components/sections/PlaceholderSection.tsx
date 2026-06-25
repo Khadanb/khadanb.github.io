@@ -14,7 +14,7 @@ export function PlaceholderSection({ id, icon: Icon, title, description }: Place
   usePanelRegistration(`placeholder-${id}`, cardRef);
 
   return (
-    <section id={id} className="min-h-screen py-16 sm:py-32 flex items-center">
+    <section id={id} className="min-h-dvh py-16 sm:py-32 flex items-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 w-full">
         <div ref={cardRef} className="glass-card p-8 sm:p-12">
           <div className="flex items-center gap-4 mb-8">

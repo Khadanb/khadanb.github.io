@@ -1,6 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { KuiperBeltObject } from './svg/celestial';
-import { useThrottledScroll } from '../../hooks';
+import { useThrottledScroll, useIsMobile } from '../../hooks';
 import { useWindowDimensions } from '../../hooks/useResizeListener';
 import { APP_CONFIG } from '../../config/app';
 import { randomInRange, generateId, clamp } from '../../utils/animation';
@@ -47,14 +47,14 @@ function generateBeltPosition(): number {
 /**
  * Initialize all KBOs with random properties.
  */
-function initializeObjects(viewportWidth: number): BeltObject[] {
+function initializeObjects(viewportWidth: number, objectCount: number): BeltObject[] {
   const objects: BeltObject[] = [];
   const now = performance.now();
 
   const totalWidth = viewportWidth + 200;
-  const spacing = totalWidth / CONFIG.objectCount;
+  const spacing = totalWidth / objectCount;
 
-  for (let i = 0; i < CONFIG.objectCount; i++) {
+  for (let i = 0; i < objectCount; i++) {
     const size = randomInRange(...CONFIG.sizeRange);
     const speed = randomInRange(...CONFIG.speedRange);
     const velocityX = speed;
@@ -90,6 +90,7 @@ function initializeObjects(viewportWidth: number): BeltObject[] {
 
 export function KuiperBelt() {
   const { height: viewportHeight, width: viewportWidth, docHeight } = useWindowDimensions();
+  const isMobile = useIsMobile();
   const objectsRef = useRef<BeltObject[]>([]);
   const elementRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const animationRef = useRef<number | null>(null);
@@ -98,10 +99,11 @@ export function KuiperBelt() {
   // Initialize on mount
   useEffect(() => {
     if (!isInitializedRef.current && viewportWidth > 0) {
-      objectsRef.current = initializeObjects(viewportWidth);
+      const count = isMobile ? CONFIG.objectCountMobile : CONFIG.objectCount;
+      objectsRef.current = initializeObjects(viewportWidth, count);
       isInitializedRef.current = true;
     }
-  }, [viewportWidth]);
+  }, [viewportWidth, isMobile]);
 
   // Respawn object when it goes off screen
   const respawnObject = useCallback((obj: BeltObject): BeltObject => {

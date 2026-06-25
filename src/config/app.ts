@@ -4,6 +4,22 @@
  */
 
 export const APP_CONFIG = {
+  // Responsive breakpoints
+  breakpoints: {
+    /** Max viewport width (px) treated as mobile for perf/visual scaling */
+    MOBILE_MAX: 767,
+  },
+
+  // Background density (decorative space scene)
+  background: {
+    /** Animated starfield star count */
+    starCount: 300,
+    /** Reduced star count on mobile to ease the per-frame canvas load */
+    starCountMobile: 140,
+    /** Scale applied to planet sizes on mobile so they don't crowd narrow screens */
+    planetScaleMobile: 0.6,
+  },
+
   // Animation timing
   animation: {
     /** Default debounce delay for resize events (ms) */
@@ -83,6 +99,8 @@ export const APP_CONFIG = {
     journeyMidpoint: 0.155,
     /** Number of asteroids in the belt */
     asteroidCount: 80,
+    /** Reduced asteroid count on mobile for performance */
+    asteroidCountMobile: 36,
     /** Size range for belt asteroids (px) */
     sizeRange: [12, 28] as [number, number],
     /** Horizontal speed range (px per ms) */
@@ -133,6 +151,8 @@ export const APP_CONFIG = {
     journeyMidpoint: 1.01,
     /** Number of Kuiper Belt objects */
     objectCount: 35,
+    /** Reduced KBO count on mobile for performance */
+    objectCountMobile: 16,
     /** Size range for KBOs (px) - smaller than asteroid belt */
     sizeRange: [8, 20] as [number, number],
     /** Horizontal speed range (px per ms) - slower than asteroids */
