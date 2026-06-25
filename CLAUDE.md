@@ -25,7 +25,7 @@ Deployment is automatic: pushing to `main` triggers `.github/workflows/static.ym
 
 ## What this is
 
-A personal portfolio (React 19 + TypeScript + Vite + Tailwind v4) whose home page is an interactive, scroll-driven **journey through the solar system**. Content sections (Hero, Experience, Projects, and placeholder Publications/Resume/Contact) float as glass-morphism panels over an animated space background. The visual ambition lives in `src/components/background/`; the page content is comparatively small. Beyond the home page, **Projects link to individual MDX blog posts** rendered on a clean reading layout (see *Routing & project posts* below).
+A personal portfolio (React 19 + TypeScript + Vite + Tailwind v4) whose home page is an interactive, scroll-driven **journey through the solar system**. Content sections (Hero, Experience, Projects, Publications, Contact, and a placeholder Resume) float as glass-morphism panels over an animated space background. The visual ambition lives in `src/components/background/`; the page content is comparatively small. Beyond the home page, **Projects link to individual MDX blog posts** rendered on a clean reading layout (see *Routing & project posts* below).
 
 ## Architecture
 

@@ -1,7 +1,7 @@
-import { FileText, Mail } from 'lucide-react';
+import { FileText } from 'lucide-react';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
-import { Hero, ExperienceTree, ProjectsSection, PublicationsSection, PlaceholderSection } from '../sections';
+import { Hero, ExperienceTree, ProjectsSection, PublicationsSection, ContactSection, PlaceholderSection } from '../sections';
 import { AtmosphereBackground } from '../background/AtmosphereBackground';
 
 export function SinglePageLayout() {
@@ -23,12 +23,7 @@ export function SinglePageLayout() {
           title="Resume"
           description="Coming soon. A detailed resume and downloadable CV will be available here."
         />
-        <PlaceholderSection
-          id="contact"
-          icon={Mail}
-          title="Contact"
-          description="Coming soon. Contact information and a form to reach out will be available here."
-        />
+        <ContactSection />
       </main>
 
       <Footer />
