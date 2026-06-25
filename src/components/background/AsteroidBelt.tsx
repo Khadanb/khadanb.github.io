@@ -136,6 +136,7 @@ export function AsteroidBelt() {
   const elementRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const animationRef = useRef<number | null>(null);
   const isInitializedRef = useRef(false);
+  const lastTickRef = useRef<number | null>(null);
 
   // Collision detection
   const { checkCollision, shouldCheckThisFrame, handleCollision, handleScrollChange } = useCollisionDetection();
@@ -346,6 +347,25 @@ export function AsteroidBelt() {
     let frameCount = 0;
 
     const animate = () => {
+      const now = performance.now();
+      const lastTick = lastTickRef.current;
+      // If RAF was paused (tab backgrounded / device asleep), elapsed time jumps
+      // and would teleport every asteroid off-screen, forcing a mass respawn at
+      // the left edge. Re-anchor spawn times by the gap so positions freeze
+      // across the pause and the even distribution is preserved.
+      if (lastTick !== null) {
+        const gap = now - lastTick;
+        if (gap > APP_CONFIG.animation.MAX_FRAME_GAP_MS) {
+          asteroidsRef.current.forEach((asteroid) => {
+            asteroid.spawnTime += gap;
+            if (asteroid.collisionStartTime !== null) {
+              asteroid.collisionStartTime += gap;
+            }
+          });
+        }
+      }
+      lastTickRef.current = now;
+
       frameCount++;
       // Update at ~30fps (every other frame)
       if (frameCount % 2 === 0) {

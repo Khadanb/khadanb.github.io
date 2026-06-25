@@ -95,6 +95,7 @@ export function KuiperBelt() {
   const elementRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const animationRef = useRef<number | null>(null);
   const isInitializedRef = useRef(false);
+  const lastTickRef = useRef<number | null>(null);
 
   // Initialize on mount
   useEffect(() => {
@@ -195,6 +196,22 @@ export function KuiperBelt() {
     let frameCount = 0;
 
     const animate = () => {
+      const now = performance.now();
+      const lastTick = lastTickRef.current;
+      // If RAF was paused (tab backgrounded / device asleep), elapsed time jumps
+      // and would teleport every object off-screen, forcing a mass respawn at the
+      // left edge. Re-anchor spawn times by the gap so positions freeze across the
+      // pause and the even distribution is preserved.
+      if (lastTick !== null) {
+        const gap = now - lastTick;
+        if (gap > APP_CONFIG.animation.MAX_FRAME_GAP_MS) {
+          objectsRef.current.forEach((obj) => {
+            obj.spawnTime += gap;
+          });
+        }
+      }
+      lastTickRef.current = now;
+
       frameCount++;
       if (frameCount % 2 === 0) {
         updatePositions(window.scrollY);

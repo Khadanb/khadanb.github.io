@@ -26,6 +26,13 @@ export const APP_CONFIG = {
     RESIZE_DEBOUNCE_MS: 100,
     /** Duration for experience tree animations (ms) */
     TREE_ANIMATION_DURATION_MS: 700,
+    /**
+     * Frame-gap threshold (ms) above which an animation loop assumes
+     * requestAnimationFrame was paused (tab backgrounded / device asleep).
+     * Belt loops re-anchor object spawn times by the gap so they don't all
+     * teleport off-screen and mass-respawn at the left edge on resume.
+     */
+    MAX_FRAME_GAP_MS: 500,
   },
 
   // Scroll behavior
