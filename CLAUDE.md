@@ -13,6 +13,12 @@ pnpm lint       # eslint . (flat config in eslint.config.js)
 pnpm preview    # serve the production build
 ```
 
+**Node is managed by [nvm](https://github.com/nvm-sh/nvm)** (installed at `~/.nvm`), and `pnpm`/`npm`/`npx` live under the nvm Node bin dir. The `default` alias points at Node `v24.18.0`, so any shell that sources nvm gets Node on `PATH` automatically. If you hit `pnpm: command not found` (a non-interactive shell that didn't source nvm), activate it with `nvm use default`, or prepend the bin dir:
+
+```bash
+export PATH="$HOME/.nvm/versions/node/v24.18.0/bin:$PATH"
+```
+
 There is **no test runner** configured. `pnpm build` is the typecheck gate — it runs `tsc -b` before bundling, so a build failure usually means a type error, not a bundler error.
 
 Deployment is automatic: pushing to `main` triggers `.github/workflows/static.yml`, which builds and publishes `dist/` to GitHub Pages (https://khadanb.github.io). There is no manual deploy step.
