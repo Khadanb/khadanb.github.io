@@ -1,6 +1,7 @@
 import { useRef } from 'react';
-import { Mail, Linkedin } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { usePanelRegistration } from '../../hooks';
+import linkedinLogo from '../../assets/linkedin-logo-2.svg';
 
 export function ContactSection() {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -23,7 +24,7 @@ export function ContactSection() {
               aria-label="Connect with Brandon Khadan on LinkedIn"
               className="inline-flex items-center gap-2 min-h-11 px-5 py-2.5 rounded-lg border border-glass-border text-text hover:text-primary hover:border-primary transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
-              <Linkedin className="w-5 h-5" aria-hidden="true" />
+              <img src={linkedinLogo} alt="" aria-hidden="true" className="w-5 h-5" />
               <span>LinkedIn</span>
             </a>
           </div>
