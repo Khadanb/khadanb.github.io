@@ -1,0 +1,43 @@
+---
+title: A Tiny Collision Engine for Glass Panels
+date: 2026-05-02
+summary: Free-flying asteroids that detect and ripple off the floating content cards, using throttled circle-vs-AABB checks and a pure-geometry core.
+tags:
+  - Canvas
+  - Physics
+  - Performance
+---
+
+The floating glass cards on the home page aren't just decoration — asteroids can
+actually hit them. Here's how that works without tanking the frame budget.
+
+## Registering panels
+
+Every glass card registers itself with a hook:
+
+```ts
+const cardRef = useRef<HTMLDivElement>(null);
+usePanelRegistration('hero-card', cardRef);
+```
+
+Registered elements land in a cached bounds map that is invalidated on resize
+and shortly after scrolling stops, so we rarely call `getBoundingClientRect`.
+
+## The check itself
+
+Large moving objects become "colliders." A throttled loop runs a
+circle-vs-axis-aligned-bounding-box test against each registered panel:
+
+| Knob | Purpose |
+| --- | --- |
+| `colliderRatio` | Fraction of asteroids that can collide |
+| `checkIntervalFrames` | How often the test runs |
+| `minColliderSize` | Small rocks pass straight through |
+
+When a hit lands, two things happen at once:
+
+1. A **ripple** animates outward from the impact point on the panel.
+2. The asteroid plays a brief absorption/shrink animation and despawns.
+
+The geometry itself lives in a pure module with no DOM dependencies, which makes
+it trivial to reason about — and easy to unit test in isolation.

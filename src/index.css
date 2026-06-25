@@ -1,7 +1,13 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 html {
   scroll-behavior: smooth;
+}
+
+/* Dark base so post pages (and any gap above the starfield canvas) stay on-brand. */
+body {
+  background-color: var(--color-bg);
 }
 
 /* Honor users who prefer reduced motion: drop smooth scroll and tame the
@@ -123,5 +129,11 @@ html {
     pointer-events: none;
     z-index: 100;
     animation: panel-ripple 800ms ease-out forwards;
+  }
+
+  /* Tune the typography plugin's dark ("invert") palette to the brand accent. */
+  .prose {
+    --tw-prose-invert-links: var(--color-primary);
+    --tw-prose-invert-quote-borders: var(--color-primary);
   }
 }

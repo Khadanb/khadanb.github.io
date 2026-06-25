@@ -1,14 +1,16 @@
-import { SinglePageLayout } from './components/layout';
-import { ScrollProvider } from './context/ScrollContext';
-import { CollisionProvider } from './context/CollisionContext';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HomePage } from './pages/HomePage';
+import { ProjectPostPage } from './pages/ProjectPostPage';
 
 function App() {
   return (
-    <ScrollProvider>
-      <CollisionProvider>
-        <SinglePageLayout />
-      </CollisionProvider>
-    </ScrollProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/projects/:slug" element={<ProjectPostPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
